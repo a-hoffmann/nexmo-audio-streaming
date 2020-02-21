@@ -33,8 +33,8 @@ const client = new speech.SpeechClient(config||null);
 const teneoApi = TIE.init(process.env.TENEO_ENGINE_URL);
 
 const nexmo = new Nexmo({
-  apiKey: "c600ea20",
-  apiSecret: "B1KYUCep1YMMMFsC",
+  apiKey: process.env.NEXMO_API_KEY,
+  apiSecret: process.env.NEXMO_API_SECRET,
   applicationId: process.env.APP_ID,
   privateKey: process.env.PRIVATE_KEY || './private.key'
 });
@@ -96,7 +96,7 @@ app.ws('/socket', (ws, req) => {
   const recognizeStream = client
   .streamingRecognize(request)
   .on('error', console.error)
-  .on('data', data => {
+  .on('data', async data => {
 	  console.log(data);
     console.log(`Transcription: ${data.results[0].alternatives[0].transcript}`);
 	
@@ -113,7 +113,7 @@ app.ws('/socket', (ws, req) => {
 		  
 		  //TEST: stream an audio back
 	  const AUDIO_URL = 'https://nexmo-community.github.io/ncco-examples/assets/voice_api_audio_streaming.mp3';
-		nexmo.calls.stream.start(uuid, { stream_url: [AUDIO_URL], loop: 0 }, (err, res) => {
+		nexmo.calls.stream.start(conversation_uuid, { stream_url: [AUDIO_URL], loop: 0 }, (err, res) => {
 			if(err) { console.error(err); }
 			else {console.log(res);}
 		});
