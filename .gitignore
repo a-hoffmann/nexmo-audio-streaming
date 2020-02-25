@@ -4,3 +4,8 @@ files/*
 private.key
 node_modules*
 package-lock.json
+serverDev.js
+serverOld.js
+app.json
+Dockerfile
+docker-compose.yml

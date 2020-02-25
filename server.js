@@ -1,10 +1,13 @@
 'use strict'
 require('dotenv').load()
-
+const fs = require('fs');
+const util = require('util');
 const express = require('express');
 const bodyParser = require('body-parser')
 const app = express();
 const expressWs = require('express-ws')(app);
+var header = require("waveheader");
+
 
 const Nexmo = require('nexmo');
 const { Readable } = require('stream');
@@ -12,25 +15,13 @@ const speech = require('@google-cloud/speech');
 
 const TIE = require('@artificialsolutions/tie-api-client');
 
-const voiceName = "Brian"
+const voiceName = 'Mizuki'; //Nexmo system name for Japanese TTS
+const AUDIO_FILE_NAME = 'output.mp3';
 
-// this is used with the heroku one-click install.
-// if you are running locally, use GOOGLE_APPLICATION_CREDENTIALS to point to the file location
 let config = null;
+var sessionUniqueID = null;
+var striptags = require('striptags');
 
-if (process.env.GOOGLE_APPLICATION_CREDENTIALS === undefined) {
-  config = {
-    projectId: 'nexmo-extend',
-    credentials: {
-      client_email: process.env.GOOGLE_CLIENT_EMAIL,
-      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n')
-    }
-  }
-}
-
-const client = new speech.SpeechClient(config||null);
-
-const teneoApi = TIE.init(process.env.TENEO_ENGINE_URL);
 
 const nexmo = new Nexmo({
   apiKey: process.env.NEXMO_API_KEY,
@@ -39,181 +30,228 @@ const nexmo = new Nexmo({
   privateKey: process.env.PRIVATE_KEY || './private.key'
 });
 
-// initialise session handler, to store mapping between nexmo uuid and engine session id
-const sessionHandler = SessionHandler();
+/**
+ * Separate configuration file for Google cloud STT.
+ * NOTE: You _have_ to keep a seperate variable for projectId and KeyFileName, otherwise there will be an exception.
+ * You can allow Google TTS and STT in the same project for both variables.
+ * @type {{keyFilename: string, projectId: string}}
+ */
+const stt_config = {
+    projectId: 'stt-tts-1582249946541',
+    keyFilename: 'google_creds.json'
+};
 
-var uuid='';
-var conversation_uuid='';
+const stt = require('@google-cloud/speech');
+const google_stt_client = new stt.SpeechClient(stt_config);
+
+/**
+ * Separate configuration file for Google cloud TTS.
+ * NOTE: You _have_ to keep a seperate variable for projectId and KeyFileName, otherwise there will be an exception.
+ * You can allow Google TTS and STT in the same project for both variables.
+ * @type {{keyFilename: string, projectId: string}}
+ */
+
+const tts_config = {
+    projectId: 'stt-tts-1582249946541',
+    keyFilename: 'google_creds.json'
+};
+
+const tts = require('@google-cloud/text-to-speech');
+const google_tts_client = new tts.TextToSpeechClient(tts_config);
+
+/**
+ * Variables
+ */
+
+// Global variable to keep track of the caller
+var CALL_UUID = null;
+// Change between "google" or "nexmo"
+var tts_response_provider = "google";
+var ngrok_hostname = "";
+
+/**
+ *
+ * @type {{interimResults: boolean, config: {sampleRateHertz: number, encoding: string, languageCode: string}}}
+ */
+/**
+ * Configuration variable for Google.
+ * @type {{interimResults: boolean, config: {sampleRateHertz: number, encoding: string, languageCode: string}}}
+ */
+
+let stream_request ={
+    config: {
+        encoding: 'LINEAR16',
+        sampleRateHertz: 16000,
+        languageCode: 'ja-JP'
+    },
+    interimResults: false
+};
+
+/**
+ * Server configuration
+ */
 
 app.use(bodyParser.json());
+app.use(express.static('public'));
+app.use(express.static('files'));
 
-app.get('/ncco', (req, res) => {
+/**
+ * GET response for Nexmo to retrieve the locally saved Google TTS audio file.
+ */
 
-  let nccoResponse = [
-    {
+app.get('/' + AUDIO_FILE_NAME, function(req, res){
+    res.sendFile(`${__dirname}/` + AUDIO_FILE_NAME);
+});
+
+/**
+ * POST response for the default events parameter
+ */
+
+app.post('/webhooks/events', (req, res) => {
+    res.sendStatus(200);
+});
+
+/**
+ * GET response for the default answer parameter. Required to initialise the conversation with caller.
+ */
+
+app.get('/webhooks/answer', (req, res) => {
+
+    ngrok_hostname = `${req.hostname}`;
+
+    let nccoResponse = [
+	{
     "action": "talk",
-    "text": "Welcome to a Voice API IVR.",
+    "text": "IVRシステムへようこそ。 ",
     "voiceName": voiceName,
     "bargeIn": false
   },
-	{
-      "action": "connect",
-      "endpoint": [{
-        "type": "websocket",
-        "content-type": "audio/l16;rate=16000",
-        "uri": `ws://${req.hostname}/socket`
-      }]
-    }
-  ];
-
-  res.status(200).json(nccoResponse);
+        {
+            "action": "connect",
+            "endpoint": [{
+                "type": "websocket",
+                "content-type": "audio/l16;rate=16000",
+                "uri": `ws://${req.hostname}/socket`,
+                // The headers parameter will be passed in the config variable below.
+                "headers": {
+                    "language": "ja-JP",
+                    "uuid": req.url.split("&uuid=")[1].toString()
+                }
+            }],
+        }
+    ];
+    res.status(200).json(nccoResponse);
 });
 
-app.post('/event', (req, res) => {
-  console.log('EVENT LOG::', req.body)
-  
-  if (req.body.direction==='outbound' && req.body.status === 'started') {
-  uuid=req.body.uuid
-  conversation_uuid=req.body.conversation_uuid
-  console.log("setting uuid as", uuid)
-  console.log("setting conversation_uuid as", conversation_uuid)
-  }
-  res.status(204).end();
-});
+/**
+ * Websocket communicating with Nexmo and the end-user via the active phone call.
+ * CALL_UUID parameter is passed to
+ */
 
-// Nexmo Websocket Handler
 app.ws('/socket', (ws, req) => {
-
-  let request ={
-    config: {
-      encoding: 'LINEAR16',
-      sampleRateHertz: 16000,
-      languageCode: process.env.LANG_CODE || 'en-US'
-    },
-    interimResults: false
-  };
-
-  const recognizeStream = client
-  .streamingRecognize(request)
-  .on('error', console.error)
-  .on('data', async data => {
-	  console.log(data);
-    console.log(`Transcription: ${data.results[0].alternatives[0].transcript}`);
 	
-	  if (uuid && conversation_uuid) {
-		  // check if we have stored an engine sessionid for this caller
-			let teneoSessionId = sessionHandler.getSession(conversation_uuid);
+    // Initialised after answer webhook has started
+    ws.on('message', (msg) => {
 
-			// send input to engine using stored sessionid and retrieve response
-			let teneoResponse = await teneoApi.sendInput(teneoSessionId, { 'text': data.results[0].alternatives[0].transcript, 'channel': 'nexmo_websocket' });
-			console.log(`teneoResponse: ${teneoResponse.output.text}`)
+        if (typeof msg === "string") {
+            // UUID is captured here.
+            let config = JSON.parse(msg);
+            CALL_UUID = config["uuid"];
+        }
 
-			// store engine sessionid for this caller
-			sessionHandler.setSession(conversation_uuid, teneoResponse.sessionId);
-		  
-		  //TEST: stream an audio back
-	  const AUDIO_URL = 'https://nexmo-community.github.io/ncco-examples/assets/voice_api_audio_streaming.mp3';
-		nexmo.calls.stream.start(conversation_uuid, { stream_url: [AUDIO_URL], loop: 0 }, (err, res) => {
-			if(err) { console.error(err); }
-			else {console.log(res);}
-		});
-	  }
-	  //notes:
-	  //uuid + conversation_uuid
-	  //https://developer.nexmo.com/voice/voice-api/guides/text-to-speech
-    
-	//send back a ncco/instruction to speak...
-  })
-  .on('end', function() {
-	  console.log('end')
-  });
+        // Send the user input as byte array to Google TTS
+        else {
+            sendStream(msg) //get the final result of this
+        }
+    });
 
-  ws.on('message', (msg) => {
-    if (typeof msg === "string") {
-		//Of type {"event":"websocket:connected","content-type":"audio/l16;rate=16000"}
-      let config = JSON.parse(msg);
-    } else {
-      recognizeStream.write(msg);
-	  //send to socket
-	  // ws.send(testNcco());
-    }
-
-  });
-
-  ws.on('close', () => {
-    recognizeStream.destroy();
-  })
+    // Initiated when caller hangs up.
+    ws.on('close', () => {
+        recognizeStream.destroy();
+    })
 });
 
-function testNcco() {
-	const ncco =
-	[
-		{
-			"action": "talk",
-			"text": "Howdy partner! I don't understand you yet. From wikipedia: <phoneme alphabet='ipa' ph='dɪˈpaːɹʔmənʔs'>departments</phoneme>",
-			"voiceName": voiceName
-		}
-	];
-
-	return JSON.stringify(ncco);
-}
-
-function sendNexmoMessage(teneoResponse, post, res) {
-
-	const ncco =
-	[
-		{
-			"action": "talk",
-			"text": "Howdy partner! I don't understand you yet. From wikipedia: <phoneme alphabet='ipa' ph='dɪˈpaːɹʔmənʔs'>departments</phoneme>",
-			"voiceName": voiceName
-		}/*,
-		{
-			"action": "input",
-			"speech":
-				{
-					"language": "en-gb" ,
-					"uuid": [post.uuid],
-					"endOnSilence": 2
-				},
-			"eventUrl": [WEBHOOK_FOR_NEXMO+pathToAnswer]
-		}*/
-
-	];
-
-	res.writeHead(200, { 'Content-Type': 'application/json' });
-	res.end(JSON.stringify(ncco));
-}
-
-//Teneo features go here 
-/*
-function sendToTeneo(userInput) {
-const teneoResponse = await teneoApi.sendInput(teneoSessionId, { 'text': userInput, 'channel': 'nexmo_voice' });
-}*/
-/***
- * SESSION HANDLER
- ***/
-
-function SessionHandler() {
-
-	// Map the Nexmo Conversation UUID to the teneo engine session id.
-	// This code keeps the map in memory, which is ok for testing purposes
-	// For production usage it is advised to make use of more resilient storage mechanisms like redis
-	const sessionMap = new Map();
-
-	return {
-		getSession: (userId) => {
-			if (sessionMap.size > 0) {
-				return sessionMap.get(userId);
-			} else {
-				return "";
-  			}
-		},
-		setSession: (userId, sessionId) => {
-			sessionMap.set(userId, sessionId)
-		}
-	};
-}
-
-
+/**
+ * Initialise the server after defining the server functions.
+ */
 const port = process.env.PORT || 8000;
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+app.listen(port, () => console.log(`Server started using port ${port}!`));
+
+async function sendStream(msg) {
+    await recognizeStream.write(msg);
+}
+
+/**
+ * Google TTS function. When the data has been retrieved from Google cloud, processing from text to speech is started.
+ */
+const recognizeStream = google_stt_client
+    .streamingRecognize(stream_request)
+    .on('error', console.error)
+    .on('data', data => {
+        processContent(data.results[0].alternatives[0].transcript);
+    });
+
+/**
+ * processContent is an asynchronous function to send input and retrieve output from a Teneo instance.
+ * After this is completed, Google or Nexmo TTS is initiated.
+ * @param transcript Transcripted text from Google
+ */
+
+async function processContent(transcript) {
+    await TIE.sendInput(process.env.TENEO_ENGINE_URL, sessionUniqueID, { text: transcript} )
+        .then((response) => {
+                console.log("Speech-to-text user output: " + transcript);
+                transcript = striptags(response.output.text);
+                console.log("Bot response: " + transcript);
+                return response
+            }
+        ).then(({sessionId}) => sessionUniqueID = sessionId);
+
+    sendTranscriptVoice(transcript);
+}
+
+/**
+ * sendTranscriptVoice performs Google/Nexmo TTS operation and Nexmo returns the audio back to the end user.
+ * @param transcript Message to be sent back to the end user
+ */
+
+async function sendTranscriptVoice(transcript) {
+
+    // Performs the text-to-speech request
+    const [response] = await google_tts_client.synthesizeSpeech({
+        input: {text: transcript},
+        // Select the language and SSML voice gender (optional) 
+        voice: {languageCode: 'ja-JP', ssmlGender: 'FEMALE'},
+        // select the type of audio encoding
+        audioConfig: {audioEncoding: 'MP3'}, 
+    });
+	
+    // Create promise object to allow the file to be created and awaited asynchronously.
+    const writeFile = util.promisify(fs.writeFile);
+
+    // Write the binary audio content to a local file
+    await writeFile(AUDIO_FILE_NAME, response.audioContent, 'binary');
+
+    console.log('Audio content written to file: ' + AUDIO_FILE_NAME);
+
+    // Google voice response
+    if(tts_response_provider === "google") {
+		//return response.audioContent;
+        nexmo.calls.stream.start(CALL_UUID, { stream_url: ['https://' + ngrok_hostname + '/' + AUDIO_FILE_NAME], loop: 1 }, (err, res) => {
+            if(err) { console.error(err); }
+            else {
+                console.log("Google response sent: " + res);
+            }
+        });
+    }
+
+    // Nexmo voice response
+    else if(tts_response_provider === "nexmo") {
+        nexmo.calls.talk.start(CALL_UUID, { text: transcript, voice_name: voiceName, loop: 1 }, (err, res) => {
+            if(err) { console.error(err); }
+            else {
+                console.log("Nexmo response sent: " + res);
+            }
+        });
+    }
+}
