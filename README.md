@@ -2,10 +2,10 @@
 
 You can use this code as a base for doing real time transcription and response of a phone call using Google Speech to Text and Text to Speech API.
 
-An audio stream is sent via websocket connection to your server and then relayed to the Google streaming interface. Speech recognition is performed and the text returned to the console.
+An audio stream is sent via websocket connection to your server and then relayed to the Google streaming interface. Speech recognition is performed and the text returned to the console. The response is synthesized, an mp3 file is written, and it is played back into the call using Nexmo's unique identifier (UUID).
 
 ## Google Speech to Text API + Text to Speech API
-You will need to set up a [Google Cloud project and service account](https://cloud.google.com/speech-to-text/docs/quickstart-client-libraries). Once these steps are completed, you will have a downloaded JSON file to set up the rest of the project. You will need this file prior to using the `Deploy to Heroku` button. If you plan on running this locally, make sure this file is saved in the project folder.
+You will need to set up a [Google Cloud project and service account](https://cloud.google.com/speech-to-text/docs/quickstart-client-libraries). Once these steps are completed, you will have a downloaded JSON file to set up the rest of the project. If you plan on running this locally, make sure this file is saved in the project folder.
 
 ### Linking the app to Nexmo
 You will need to create a new Nexmo application in order to work with this app:
