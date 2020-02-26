@@ -242,6 +242,9 @@ async function sendTranscriptVoiceNoSave(transcript) {
 		formatForNexmo(response.audioContent,640).forEach(function(aud) {
 			streamResponse.send(aud);
 		});
+		if (endCall) {
+			nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
+				}
     }
 
     // Nexmo voice response
