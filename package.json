@@ -4,7 +4,8 @@
   "description": "Google Cloud Speech with Nexmo Demo",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node serverDev.js"
   },
   "repository": {
     "type": "git",
@@ -24,7 +25,6 @@
     "dotenv": "^4.0.0",
     "express": "^4.16.4",
     "express-ws": "^4.0.0",
-    "fixed-size-stream-splitter": "^1.1.0",
     "fs": "0.0.1-security",
     "nexmo": "^2.4.0",
     "striptags": "^3.1.1",

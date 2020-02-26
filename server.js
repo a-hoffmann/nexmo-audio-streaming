@@ -21,6 +21,7 @@ const AUDIO_FILE_NAME = 'output.mp3';
 let config = null;
 var sessionUniqueID = null;
 var striptags = require('striptags');
+var endCall = false;
 
 
 const nexmo = new Nexmo({
@@ -203,6 +204,10 @@ async function processContent(transcript) {
                 console.log("Speech-to-text user output: " + transcript);
                 transcript = striptags(response.output.text);
                 console.log("Bot response: " + transcript);
+				if (response.output.parameters.endCall==="true") {
+					console.log('set endcall to true');
+					endCall=true;
+				}
                 return response
             }
         ).then(({sessionId}) => sessionUniqueID = sessionId);
@@ -236,11 +241,14 @@ async function sendTranscriptVoice(transcript) {
 
     // Google voice response
     if(tts_response_provider === "google") {
-		//return response.audioContent;
         nexmo.calls.stream.start(CALL_UUID, { stream_url: ['https://' + ngrok_hostname + '/' + AUDIO_FILE_NAME], loop: 1 }, (err, res) => {
             if(err) { console.error(err); }
             else {
                 console.log("Google response sent: " + res);
+				if (endCall) {
+					//end the call after speaking the closing message.
+					nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
+				}
             }
         });
     }
@@ -251,7 +259,12 @@ async function sendTranscriptVoice(transcript) {
             if(err) { console.error(err); }
             else {
                 console.log("Nexmo response sent: " + res);
+				if (endCall) {
+					nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
+				}
             }
         });
     }
+	
+	
 }
