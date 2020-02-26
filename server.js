@@ -22,7 +22,7 @@ let config = null;
 var sessionUniqueID = null;
 var striptags = require('striptags');
 var endCall = false;
-
+var streamResponse;
 
 const nexmo = new Nexmo({
   apiKey: process.env.NEXMO_API_KEY,
@@ -151,6 +151,8 @@ app.get('/webhooks/answer', (req, res) => {
 
 app.ws('/socket', (ws, req) => {
 	
+	streamResponse = ws;
+	
     // Initialised after answer webhook has started
     ws.on('message', (msg) => {
 
@@ -212,13 +214,66 @@ async function processContent(transcript) {
             }
         ).then(({sessionId}) => sessionUniqueID = sessionId);
 
-    sendTranscriptVoice(transcript);
+    sendTranscriptVoiceNoSave(transcript);
 }
 
 /**
- * sendTranscriptVoice performs Google/Nexmo TTS operation and Nexmo returns the audio back to the end user.
+ * sendTranscriptVoiceNoSave performs Google/Nexmo TTS operation and Nexmo returns the audio back to the end user. 
+ * Does not save the file as a .MP3 file in the app folder.
+ * If desired, use sendTranscriptVoice instead
  * @param transcript Message to be sent back to the end user
  */
+
+async function sendTranscriptVoiceNoSave(transcript) {
+
+    // Performs the text-to-speech request
+    const [response] = await google_tts_client.synthesizeSpeech({
+        input: {text: transcript},
+        // Select the language and SSML voice gender (optional) 
+        voice: {languageCode: 'ja-JP', ssmlGender: 'FEMALE'},
+        // select the type of audio encoding
+        audioConfig: {audioEncoding: 'LINEAR16', sampleRateHertz: 16000}, 
+    });
+	
+	
+
+    // Google voice response
+    if(tts_response_provider === "google") {
+		formatForNexmo(response.audioContent,640).forEach(function(aud) {
+			streamResponse.send(aud);
+		});
+    }
+
+    // Nexmo voice response
+    else if(tts_response_provider === "nexmo") {
+        nexmo.calls.talk.start(CALL_UUID, { text: transcript, voice_name: voiceName, loop: 1 }, (err, res) => {
+            if(err) { console.error(err); }
+            else {
+                console.log("Nexmo response sent: " + res);
+				if (endCall) {
+					nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
+				}
+            }
+        });
+    }	
+}
+/**
+ * Constructs the byte array to be written to the Nexmo Websocket, in packets of byteLen length.
+ * @param ac Audio response Buffer
+ */
+function formatForNexmo(ac,byteLen) {
+	var totalByteLength = Buffer.byteLength(ac);
+	
+    console.log(totalByteLength);
+   
+    var msgLength = byteLen; // bytes
+   
+    var bufQueue=[];
+    for (var i=0;i<totalByteLength;i+=msgLength) {
+	    bufQueue.push(ac.slice(i,i+msgLength));
+    }
+    return bufQueue;
+}
 
 async function sendTranscriptVoice(transcript) {
 
@@ -241,7 +296,11 @@ async function sendTranscriptVoice(transcript) {
 
     // Google voice response
     if(tts_response_provider === "google") {
-        nexmo.calls.stream.start(CALL_UUID, { stream_url: ['https://' + ngrok_hostname + '/' + AUDIO_FILE_NAME], loop: 1 }, (err, res) => {
+		formatForNexmo(response.audioContent,640).forEach(function(aud) {
+			streamResponse.send(aud);
+		});
+         //Play Audio File through API
+		nexmo.calls.stream.start(CALL_UUID, { stream_url: ['https://' + ngrok_hostname + '/' + AUDIO_FILE_NAME], loop: 1 }, (err, res) => {
             if(err) { console.error(err); }
             else {
                 console.log("Google response sent: " + res);
