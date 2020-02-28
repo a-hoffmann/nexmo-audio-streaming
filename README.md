@@ -52,8 +52,7 @@ cp .env.example > .env
 
 Edit the .env file to add in your application ID and the location of the credentials file from Google.
 
-```yaml
-GOOGLE_APPLICATION_CREDENTIALS=./google_creds.json
+```
 APP_ID="12345678-aaaa-bbbb-4321-1234567890ab"
 TENEO_ENGINE_URL=""
 NEXMO_API_KEY=""
