@@ -89,7 +89,7 @@ let stream_request ={
     config: {
         encoding: 'LINEAR16',
         sampleRateHertz: 16000,
-        languageCode: process.env.STT_LANG_CODE //special config for SG STT
+        languageCode: process.env.STT_LANG_CODE
     },
     interimResults: false
 };
