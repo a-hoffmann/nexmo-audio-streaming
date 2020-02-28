@@ -89,7 +89,7 @@ let stream_request ={
     config: {
         encoding: 'LINEAR16',
         sampleRateHertz: 16000,
-        languageCode: 'en-SG' //special config for SG STT
+        languageCode: process.env.STT_LANG_CODE //special config for SG STT
     },
     interimResults: false
 };
@@ -121,7 +121,7 @@ app.get('/webhooks/answer', (req, res) => {
     let nccoResponse = [
 	{
     "action": "talk",
-    "text": ((voiceName==="Mizuki") ? "IVRシステムへようこそ。 " : "Welcome to the IVR system"),
+    "text": ((voiceName==="Mizuki") ? "IVRシステムへようこそ。 " : "Welcome to the IVR system."),
     "voiceName": voiceName,
     "bargeIn": false
   },
