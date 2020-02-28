@@ -17,7 +17,6 @@ const TIE = require('@artificialsolutions/tie-api-client');
 
 const voiceName = process.env.NEXMO_VOICE;
 const lang = process.env.LANG_CODE;
-const AUDIO_FILE_NAME = 'output.mp3';
 
 let config = null;
 var sessionUniqueID = null;
@@ -29,7 +28,7 @@ const nexmo = new Nexmo({
   apiKey: process.env.NEXMO_API_KEY,
   apiSecret: process.env.NEXMO_API_SECRET,
   applicationId: process.env.APP_ID,
-  privateKey: process.env.PRIVATE_KEY || './private.key'
+  privateKey: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n')
 });
 
 /**
@@ -74,7 +73,7 @@ const google_tts_client = new tts.TextToSpeechClient(tts_config);
 // Global variable to keep track of the caller
 var CALL_UUID = null;
 // Change between "google" or "nexmo"
-var tts_response_provider = "google";
+var tts_response_provider = process.env.TTS_RESPONSE_PROVIDER;
 var ngrok_hostname = "";
 
 /**
@@ -90,7 +89,7 @@ let stream_request ={
     config: {
         encoding: 'LINEAR16',
         sampleRateHertz: 16000,
-        languageCode: 'ja-JP'
+        languageCode: 'en-SG' //special config for SG STT
     },
     interimResults: false
 };
@@ -130,7 +129,7 @@ app.get('/webhooks/answer', (req, res) => {
     let nccoResponse = [
 	{
     "action": "talk",
-    "text": "IVRシステムへようこそ。 ",
+    "text": ((voiceName==="Mizuki") ? "IVRシステムへようこそ。 " : "Welcome to the IVR system"),
     "voiceName": voiceName,
     "bargeIn": false
   },
@@ -142,7 +141,7 @@ app.get('/webhooks/answer', (req, res) => {
                 "uri": `ws://${req.hostname}/socket`,
                 // The headers parameter will be passed in the config variable below.
                 "headers": {
-                    "language": "ja-JP",
+                    "language": lang,
                     "uuid": req.url.split("&uuid=")[1].toString()
                 }
             }],
@@ -227,7 +226,6 @@ async function processContent(transcript) {
 /**
  * sendTranscriptVoiceNoSave performs Google/Nexmo TTS operation and Nexmo returns the audio back to the end user. 
  * Does not save the file as a .MP3 file in the app folder.
- * If desired, use sendTranscriptVoice instead
  * @param transcript Message to be sent back to the end user
  */
 
@@ -237,7 +235,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
     const [response] = await google_tts_client.synthesizeSpeech({
         input: {text: transcript},
         // Select the language and SSML voice gender (optional) 
-        voice: {languageCode: 'ja-JP', ssmlGender: 'FEMALE'},
+        voice: {languageCode: lang, ssmlGender: 'FEMALE'},
         // select the type of audio encoding
         audioConfig: {audioEncoding: 'LINEAR16', sampleRateHertz: 16000}, 
     });
@@ -281,57 +279,4 @@ function formatForNexmo(ac,byteLen) {
 	    bufQueue.push(ac.slice(i,i+msgLength));
     }
     return bufQueue;
-}
-
-async function sendTranscriptVoice(transcript) {
-
-    // Performs the text-to-speech request
-    const [response] = await google_tts_client.synthesizeSpeech({
-        input: {text: transcript},
-        // Select the language and SSML voice gender (optional) 
-        voice: {languageCode: 'ja-JP', ssmlGender: 'FEMALE'},
-        // select the type of audio encoding
-        audioConfig: {audioEncoding: 'MP3'}, 
-    });
-	
-    // Create promise object to allow the file to be created and awaited asynchronously.
-    const writeFile = util.promisify(fs.writeFile);
-
-    // Write the binary audio content to a local file
-    await writeFile(AUDIO_FILE_NAME, response.audioContent, 'binary');
-
-    console.log('Audio content written to file: ' + AUDIO_FILE_NAME);
-
-    // Google voice response
-    if(tts_response_provider === "google") {
-		formatForNexmo(response.audioContent,640).forEach(function(aud) {
-			streamResponse.send(aud);
-		});
-         //Play Audio File through API
-		nexmo.calls.stream.start(CALL_UUID, { stream_url: ['https://' + ngrok_hostname + '/' + AUDIO_FILE_NAME], loop: 1 }, (err, res) => {
-            if(err) { console.error(err); }
-            else {
-                console.log("Google response sent: " + res);
-				if (endCall) {
-					//end the call after speaking the closing message.
-					nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
-				}
-            }
-        });
-    }
-
-    // Nexmo voice response
-    else if(tts_response_provider === "nexmo") {
-        nexmo.calls.talk.start(CALL_UUID, { text: transcript, voice_name: voiceName, loop: 1 }, (err, res) => {
-            if(err) { console.error(err); }
-            else {
-                console.log("Nexmo response sent: " + res);
-				if (endCall) {
-					nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
-				}
-            }
-        });
-    }
-	
-	
 }
