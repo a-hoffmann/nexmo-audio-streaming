@@ -15,7 +15,8 @@ const speech = require('@google-cloud/speech');
 
 const TIE = require('@artificialsolutions/tie-api-client');
 
-const voiceName = 'Mizuki'; //Nexmo system name for Japanese TTS
+const voiceName = process.env.NEXMO_VOICE;
+const lang = process.env.LANG_CODE;
 const AUDIO_FILE_NAME = 'output.mp3';
 
 let config = null;
