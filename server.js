@@ -40,7 +40,10 @@ const nexmo = new Nexmo({
  */
 const stt_config = {
     projectId: 'stt-tts-1582249946541',
-    keyFilename: 'google_creds.json'
+    credentials: {
+		client_email: process.env.GOOGLE_CLIENT_EMAIL,
+		private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n')
+	}
 };
 
 const stt = require('@google-cloud/speech');
@@ -55,7 +58,10 @@ const google_stt_client = new stt.SpeechClient(stt_config);
 
 const tts_config = {
     projectId: 'stt-tts-1582249946541',
-    keyFilename: 'google_creds.json'
+    credentials: {
+		client_email: process.env.GOOGLE_CLIENT_EMAIL,
+		private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n')
+	}
 };
 
 const tts = require('@google-cloud/text-to-speech');
