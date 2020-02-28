@@ -103,14 +103,6 @@ app.use(express.static('public'));
 app.use(express.static('files'));
 
 /**
- * GET response for Nexmo to retrieve the locally saved Google TTS audio file.
- */
-
-app.get('/' + AUDIO_FILE_NAME, function(req, res){
-    res.sendFile(`${__dirname}/` + AUDIO_FILE_NAME);
-});
-
-/**
  * POST response for the default events parameter
  */
 
