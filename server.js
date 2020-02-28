@@ -243,7 +243,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
 			streamResponse.send(aud);
 		});
 		if (endCall) {
-			nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
+					nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
 				}
     }
 
@@ -266,8 +266,6 @@ async function sendTranscriptVoiceNoSave(transcript) {
  */
 function formatForNexmo(ac,byteLen) {
 	var totalByteLength = Buffer.byteLength(ac);
-	
-    console.log(totalByteLength);
    
     var msgLength = byteLen; // bytes
    
