@@ -15,7 +15,7 @@ You will need to create a new Nexmo application in order to work with this app:
 Install the CLI by following [these instructions](https://github.com/Nexmo/nexmo-cli#installation). Then create a new Nexmo application that also sets up your `answer_url` and `event_url` for the app running locally on your machine.
 
 ```
-nexmo app:create google-speech-to-text http://<your_hostname>/ncco http://<your_hostname>/event
+nexmo app:create google-speech-to-text http://<your_hostname>/webhooks/answer http://<your_hostname>/webhooks/events
 ```
 
 This will return an application ID. Make a note of it.
