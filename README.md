@@ -1,19 +1,4 @@
-# Nexmo + Google Cloud STT/TTS Demo
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg?classes=noborder)](https://heroku.com/deploy?template=https://github.com/a-hoffmann/nexmo-audio-streaming/tree/heroku)
-
-In the 'Config Vars' section, add the following:
-* **APP_ID:** The Nexmo Application ID
-* **NEXMO_API_KEY:** Your Nexmo API Key
-* **NEXMO_API_SECRET:** Your Nexmo API Secret
-* **GOOGLE_CLIENT_EMAIL:** Your Google Cloud service email
-* **GOOGLE_PRIVATE_KEY:** Your Google Cloud Private Key (including `-----BEGIN PRIVATE KEY-----\n`)
-* **TTS_LANG_CODE:** The language code for Google's TTS: see some sample options [here](https://cloud.google.com/text-to-speech/docs/voices) (from Google)
-* **TTS_GENDER:** The gender for Google's TTS: can be MALE, FEMALE or NEUTRAL
-* **STT_LANG_CODE:** The language code for Google's STT.
-* **NEXMO_VOICE:** The Nexmo voice you would like to use: see options [here](https://developer.nexmo.com/voice/voice-api/guides/text-to-speech#voice-names). 
-* **TENEO_ENGINE_URL:** Your Teneo Engine URL
-* **TTS_RESPONSE_PROVIDER:** Choose between `google|nexmo` 
+# Nexmo + Google Cloud STT/TTS Demo 
 
 You can use this code as a base for doing real time transcription and response of a phone call using Google Speech to Text and Text to Speech API.
 
@@ -48,6 +33,23 @@ Finally, link your new number to the application you created by running:
 ```
 nexmo link:app YOUR_NUMBER YOUR_APPLICATION_ID
 ```
+
+### Heroku Install
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg?classes=noborder)](https://heroku.com/deploy?template=https://github.com/a-hoffmann/nexmo-audio-streaming/tree/heroku)
+
+In the 'Config Vars' section, add the following:
+* **APP_ID:** The Nexmo Application ID
+* **NEXMO_API_KEY:** Your Nexmo API Key
+* **NEXMO_API_SECRET:** Your Nexmo API Secret
+* **GOOGLE_CLIENT_EMAIL:** Your Google Cloud service email
+* **GOOGLE_PRIVATE_KEY:** Your Google Cloud Private Key (including `-----BEGIN PRIVATE KEY-----\n`)
+* **TTS_LANG_CODE:** The language code for Google's TTS API: see some sample options [here](https://cloud.google.com/text-to-speech/docs/voices) (from Google)
+* **TTS_GENDER:** The gender for Google's TTS API: can be MALE, FEMALE or NEUTRAL
+* **STT_LANG_CODE:** The language code for Google's STT API.
+* **NEXMO_VOICE:** The Nexmo voice you would like to use: see options [here](https://developer.nexmo.com/voice/voice-api/guides/text-to-speech#voice-names). 
+* **TENEO_ENGINE_URL:** Your Teneo Engine URL
+* **TTS_RESPONSE_PROVIDER:** Choose between `google|nexmo`
 
 ### Local Install
 
