@@ -1,54 +1,61 @@
 {
-  "name": "Nexmo + Google Cloud Speech",
-  "description": "Demo applicaiton of using Google Cloud Speech API with Nexmo Websockets to perform realtime transcription in multiple languages.",
-  "repository": "https://github.com/nexmo-community/voice-google-speechtotext",
-  "keywords": ["node", "nexmo", "google cloud", "gcp", "text to speech"],
-  "env": {
-    "NAME": {
-      "description": "The Heroku app name."
-    },
-    "CREATE_NEXMO_APP": {
-      "description": "Should the application automatically create a Nexmo application and purchase a new phone number",
-      "value": "yes"
-    },
-    "API_KEY": {
-      "description": "Your Nexmo API Key",
-      "value": "",
-      "required" : true
-    },
-    "API_SECRET": {
-      "description": "Your Nexmo API Secret",
-      "value": "",
-      "required" : true
-    },
-    "CC": {
-      "description": "The ISO 3361 Country Code where you want the number to be purchased eg, US, GB, ES etc.",
-      "value": "US",
-      "required" : true
-    },
-    "GOOGLE_CLIENT_EMAIL": {
-      "description": "The client_email property from your google_creds.json file.",
-      "value": "service_account_name@project.iam.gserviceaccount.com",
-      "required" : true
-    },
-    "GOOGLE_PRIVATE_KEY": {
-      "description": "The private_key property from your google_creds.json file. Make sure to copy and paste everything here.",
-      "value": "-----BEGIN PRIVATE KEY-----",
-      "required" : true
+    "name": "heroku-nexmo-teneo",
+    "description": "A Nexmo IVR solution powered by Teneo.",
+    "keywords": [
+        "bot",
+        "Nexmo",
+        "Teneo",
+		"IVR",
+		"TTS/STT"
+    ],
+    "repository": "https://github.com/a-hoffmann/nexmo-audio-streaming/tree/heroku",
+    "env": {
+        "APP_ID": {
+            "description": "Nexmo App ID",
+            "required":true
+        },
+        "NEXMO_API_KEY": {
+            "description": "Please input your Nexmo API Key",
+            "required":true
+        },
+        "NEXMO_API_SECRET": {
+            "description": "Please input your Nexmo API Secret",
+            "required":true
+        },
+		"TENEO_ENGINE_URL": {
+			"description": "Input your Teneo Engine URL. https://some.engine/instance/",
+			"required":true
+		},
+        "GOOGLE_CLIENT_EMAIL": {
+            "description": "The client_email property from your google_creds.json file.",
+			"value": "service_account_name@project.iam.gserviceaccount.com",
+            "required":true
+        },
+        "GOOGLE_PRIVATE_KEY": {
+            "description": "The private_key property from your google_creds.json file. Make sure to copy and paste everything here.",
+			"value": "-----BEGIN PRIVATE KEY-----",
+            "required":true
+        },
+        "TTS_LANG_CODE": {
+            "description": "Language setting for Google Text-to-speech API. Egs en-US, en-GB or ja-JP",
+            "required":false
+        },
+		"TTS_GENDER": {
+            "description": "Gender setting for Google Text-to-speech API. Can be MALE, FEMALE or NEUTRAL",
+            "required":false
+        },
+        "STT_LANG_CODE": {
+            "description": "Language setting for Google Speech-to-text API response. Egs en-US, en-GB or ja-JP",
+            "required":false
+        },
+        "NEXMO_VOICE": {
+            "description": "Voice name for Speech-to-text response from Nexmo. Egs Brian, Gwyneth etc.",
+            "required":false
+        },
+        "TTS_RESPONSE_PROVIDER": {
+            "description": "Choose between google or nexmo (no quotation marks required)",
+            "required":false
+        }
     }
-  },
-  "buildpacks": [
-     {
-       "url": "https://github.com/nexmo-community/heroku-buildpack-voice"
-     },
-     {
-        "url": "heroku/node"
-     }
-   ],
-  "formation": {
-    "web": {
-      "quantity": 1,
-      "size": "free"
-    }
-  }
 }
+
