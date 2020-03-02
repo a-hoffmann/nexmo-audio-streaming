@@ -76,7 +76,7 @@ const google_tts_client = new tts.TextToSpeechClient(tts_config);
 var CALL_UUID = null;
 // Change between "google" or "nexmo"
 var tts_response_provider = process.env.TTS_RESPONSE_PROVIDER || 'nexmo';
-var your_msgLength = "";
+var your_hostname = "";
 
 /**
  *
