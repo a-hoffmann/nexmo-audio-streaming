@@ -15,8 +15,10 @@ const speech = require('@google-cloud/speech');
 
 const TIE = require('@artificialsolutions/tie-api-client');
 
-const voiceName = process.env.NEXMO_VOICE;
-const lang = process.env.LANG_CODE;
+const voiceName = process.env.NEXMO_VOICE || 'Brian';
+const sttLang = process.env.STT_LANG_CODE || 'en-GB';
+const ttsLang = process.env.TTS_LANG_CODE || 'en-GB';
+const ttsGender = process.env.TTS_GENDER || 'NEUTRAL';
 
 let config = null;
 var sessionUniqueID = null;
@@ -73,8 +75,8 @@ const google_tts_client = new tts.TextToSpeechClient(tts_config);
 // Global variable to keep track of the caller
 var CALL_UUID = null;
 // Change between "google" or "nexmo"
-var tts_response_provider = process.env.TTS_RESPONSE_PROVIDER;
-var ngrok_hostname = "";
+var tts_response_provider = process.env.TTS_RESPONSE_PROVIDER || 'nexmo';
+var your_msgLength = "";
 
 /**
  *
@@ -89,7 +91,7 @@ let stream_request ={
     config: {
         encoding: 'LINEAR16',
         sampleRateHertz: 16000,
-        languageCode: process.env.STT_LANG_CODE
+        languageCode: sttLang
     },
     interimResults: false
 };
@@ -116,7 +118,7 @@ app.post('/webhooks/events', (req, res) => {
 
 app.get('/webhooks/answer', (req, res) => {
 
-    ngrok_hostname = `${req.hostname}`;
+    your_hostname = `${req.hostname}`;
 
     let nccoResponse = [
 	{
@@ -133,7 +135,7 @@ app.get('/webhooks/answer', (req, res) => {
                 "uri": `ws://${req.hostname}/socket`,
                 // The headers parameter will be passed in the config variable below.
                 "headers": {
-                    "language": lang,
+                    "language": sttLang,
                     "uuid": req.url.split("&uuid=")[1].toString()
                 }
             }],
@@ -227,7 +229,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
     const [response] = await google_tts_client.synthesizeSpeech({
         input: {text: transcript},
         // Select the language and SSML voice gender (optional) 
-        voice: {languageCode: lang, ssmlGender: 'FEMALE'},
+        voice: {languageCode: ttsLang, ssmlGender: 'FEMALE'},
         // select the type of audio encoding
         audioConfig: {audioEncoding: 'LINEAR16', sampleRateHertz: 16000}, 
     });
