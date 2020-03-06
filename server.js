@@ -160,6 +160,7 @@ app.ws('/socket', (ws, req) => {
             // UUID is captured here.
             let config = JSON.parse(msg);
             CALL_UUID = config["uuid"];
+			console.log('setting calluuid as ',CALL_UUID)
         }
 
         // Send the user input as byte array to Google TTS
