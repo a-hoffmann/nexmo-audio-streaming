@@ -202,7 +202,7 @@ const recognizeStream = google_stt_client
  */
 
 async function processContent(transcript) {
-    await TIE.sendInput(process.env.TENEO_ENGINE_URL, sessionUniqueID, { text: transcript} )
+    await TIE.sendInput(process.env.TENEO_ENGINE_URL, sessionUniqueID, { text: transcript, channel: 'IVR'} )
         .then((response) => {
                 console.log("Speech-to-text user output: " + transcript);
                 transcript = striptags(response.output.text);
