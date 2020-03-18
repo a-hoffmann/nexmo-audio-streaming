@@ -243,7 +243,26 @@ async function sendTranscriptVoiceNoSave(transcript) {
 			streamResponse.send(aud);
 		});
 		if (endCall) {
+			
 					nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
+					//streamResponse.close()
+					nexmo.calls.create({
+  to: [{
+    type: 'phone',
+    number: 6583766753
+  }],
+  from: {
+    type: 'phone',
+    number: 6531388114
+  },
+  ncco: [{
+    "action": "talk",
+    "text": "This is a text to speech call from Nexmo"
+  }]
+}, (error, response) => {
+  if (error) console.error(error)
+  if (response) console.log(response)
+})
 				}
     }
 
