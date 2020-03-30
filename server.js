@@ -125,11 +125,8 @@ app.get('/webhooks/answer', (req, res) => {
 
     let nccoResponse = [
 	{"action": "record",
-	"beepStart":"true",
-	"eventUrl": [`${req.hostname}/webhooks/events`],
-    "split": "conversation",
-    "channels": 2,
-	"endOnKey": 9},
+	"eventUrl": [`${req.hostname}/webhooks/events`]
+	},
 	{
     "action": "talk",
     "text": ((voiceName==="Mizuki") ? "IVRシステムへようこそ。 " : "Hello and welcome to the IVR system."),
