@@ -121,9 +121,13 @@ app.get('/webhooks/answer', (req, res) => {
     your_hostname = `${req.hostname}`;
 
     let nccoResponse = [
+	{"action": "record",
+	"eventUrl": [`${req.hostname}/webhooks/events`],
+    "split": "conversation",
+    "channels": 2},
 	{
     "action": "talk",
-    "text": ((voiceName==="Mizuki") ? "IVRシステムへようこそ。 " : "Welcome to the IVR system."),
+    "text": ((voiceName==="Mizuki") ? "IVRシステムへようこそ。 " : "Hello and welcome to the IVR system."),
     "voiceName": voiceName,
     "bargeIn": false
   },
@@ -246,23 +250,6 @@ async function sendTranscriptVoiceNoSave(transcript) {
 			
 					nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
 					//streamResponse.close()
-					nexmo.calls.create({
-  to: [{
-    type: 'phone',
-    number: 6583766753
-  }],
-  from: {
-    type: 'phone',
-    number: 6531388114
-  },
-  ncco: [{
-    "action": "talk",
-    "text": "This is a text to speech call from Nexmo"
-  }]
-}, (error, response) => {
-  if (error) console.error(error)
-  if (response) console.log(response)
-})
 				}
     }
 
