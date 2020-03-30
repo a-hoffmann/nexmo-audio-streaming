@@ -109,7 +109,6 @@ app.use(express.static('files'));
  */
 
 app.post('/webhooks/events', (req, res) => {
-	console.log(req)
 	if (req.recording_url) {
 		console.log(req.recording_url)
 	}
@@ -126,9 +125,11 @@ app.get('/webhooks/answer', (req, res) => {
 
     let nccoResponse = [
 	{"action": "record",
+	"beepStart":"true"
 	"eventUrl": [`${req.hostname}/webhooks/events`],
     "split": "conversation",
-    "channels": 2},
+    "channels": 2,
+	"endOnKey": 9},
 	{
     "action": "talk",
     "text": ((voiceName==="Mizuki") ? "IVRシステムへようこそ。 " : "Hello and welcome to the IVR system."),
