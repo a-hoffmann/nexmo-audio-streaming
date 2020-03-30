@@ -125,7 +125,7 @@ app.get('/webhooks/answer', (req, res) => {
 
     let nccoResponse = [
 	{"action": "record",
-	"beepStart":"true"
+	"beepStart":"true",
 	"eventUrl": [`${req.hostname}/webhooks/events`],
     "split": "conversation",
     "channels": 2,
