@@ -109,8 +109,9 @@ app.use(express.static('files'));
  */
 
 app.post('/webhooks/events', (req, res) => {
-	if (req.recording_url) {
-		console.log(req.recording_url)
+	if (req.body.recording_url) {
+		console.log(req.body.recording_url)
+		res.sendStatus(204);
 	}
     res.sendStatus(200);
 });
