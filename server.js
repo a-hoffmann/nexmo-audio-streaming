@@ -126,7 +126,7 @@ app.get('/webhooks/answer', (req, res) => {
 
     let nccoResponse = [
 	{"action": "record",
-	"eventUrl": [`${req.hostname}/webhooks/events`]
+	"eventUrl": [`https://${req.hostname}/webhooks/events`]
 	},
 	{
     "action": "talk",
