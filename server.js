@@ -110,8 +110,7 @@ app.use(express.static('files'));
 
 app.post('/webhooks/events', (req, res) => {
 	if (req.body.recording_url) {
-		console.log(req.body.recording_url)
-		res.sendStatus(204);
+		console.log('Recording available at: ',req.body.recording_url)
 	}
     res.sendStatus(200);
 });
