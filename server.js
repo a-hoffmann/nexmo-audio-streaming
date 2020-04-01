@@ -268,6 +268,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
         Checkbox: true,
         Person: testVoiceName 
   }).then(function (testResponse) {
+	  console.log(testResponse);
 		formatForNexmo(testResponse.encoded,640).forEach(function(aud) {
 			streamResponse.send(aud);
 		});
