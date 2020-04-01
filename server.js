@@ -271,7 +271,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
         Person: testVoiceName 
   }).then(function (testResponse) {
 	  console.log(testResponse.data.message);
-		formatForNexmo(Buffer.from(testResponse.data.encoded,'base64'),640).forEach(function(aud) {
+		formatForNexmo(Buffer.from(testResponse.data.encoded,'base64'),320).forEach(function(aud) {
 			streamResponse.send(aud);
 		});
 		if (endCall) {
