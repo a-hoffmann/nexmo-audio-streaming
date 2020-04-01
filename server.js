@@ -236,7 +236,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
 
     // Performs the text-to-speech request
     const [response] = await google_tts_client.synthesizeSpeech({
-        input: (transcript.startsWith("<speak")) ? {text: transcript} : {ssml: transcript},
+        input: (transcript.startsWith("<speak")) ? {ssml: transcript} : {text: transcript},
         // Select the language and SSML voice gender (optional) 
         voice: {languageCode: ttsLang, ssmlGender: 'FEMALE'},
         // select the type of audio encoding
