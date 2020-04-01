@@ -263,11 +263,11 @@ async function sendTranscriptVoiceNoSave(transcript) {
     }
 	
 	if(tts_response_provider === "test") {
-		const [testResponse] = await axios.post(testEndpoint, {
+		axios.post(testEndpoint, {
 		Text: transcript,
         Checkbox: true,
         Person: testVoiceName 
-  });
+  }).then(function (testResponse) {
 		formatForNexmo(testResponse.encoded,640).forEach(function(aud) {
 			streamResponse.send(aud);
 		});
@@ -276,6 +276,9 @@ async function sendTranscriptVoiceNoSave(transcript) {
 					nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
 					//streamResponse.close()
 				}
+  }).catch(function (error) {
+    console.log(error);
+  });
     }
 
     // Nexmo voice response
