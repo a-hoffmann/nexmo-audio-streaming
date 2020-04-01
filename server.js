@@ -24,7 +24,7 @@ const ttsGender = process.env.TTS_GENDER || 'NEUTRAL';
 const testEndpoint = process.env.TEST_ENDPOINT;
 const testVoiceName = process.env.TEST_VOICE_NAME;
 
-
+const recording = process.env.RECORDING || false;
 let config = null;
 var sessionUniqueID = null;
 var striptags = require('striptags');
@@ -129,9 +129,6 @@ app.get('/webhooks/answer', (req, res) => {
     your_hostname = `${req.hostname}`;
 
     let nccoResponse = [
-	{"action": "record",
-	"eventUrl": [`https://${req.hostname}/webhooks/events`]
-	},
 	{
     "action": "talk",
     "text": ((voiceName==="Mizuki") ? "IVRシステムへようこそ。 " : "Hello and welcome to the IVR system."),
@@ -152,6 +149,11 @@ app.get('/webhooks/answer', (req, res) => {
             }],
         }
     ];
+	
+	if (recording) {nccoResponse.unshift({"action": "record",
+	"eventUrl": [`https://${req.hostname}/webhooks/events`]
+	})}
+	
     res.status(200).json(nccoResponse);
 });
 
