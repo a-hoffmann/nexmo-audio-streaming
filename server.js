@@ -271,7 +271,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
         Person: testVoiceName 
   }).then(function (testResponse) {
 	  console.log(testResponse.data.message);
-		formatForNexmo(Buffer.from(testResponse.data.encoded,'base64'),1280).forEach(function(aud) {
+		formatForNexmo(Buffer.from(testResponse.data.encoded,'base64'),640).forEach(function(aud) {
 			streamResponse.send(aud);
 		});
 		if (endCall) {
@@ -303,6 +303,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
  */
 function formatForNexmo(ac,byteLen) {
 	var totalByteLength = Buffer.byteLength(ac);
+	console.log('byteLength ',totalByteLength);
    
     var msgLength = byteLen; // bytes
    
