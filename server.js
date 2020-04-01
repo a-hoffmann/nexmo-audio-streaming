@@ -7,6 +7,7 @@ const bodyParser = require('body-parser')
 const app = express();
 const expressWs = require('express-ws')(app);
 var header = require("waveheader");
+const axios = require('axios');
 
 
 const Nexmo = require('nexmo');
@@ -19,6 +20,10 @@ const voiceName = process.env.NEXMO_VOICE || 'Brian';
 const sttLang = process.env.STT_LANG_CODE || 'en-GB';
 const ttsLang = process.env.TTS_LANG_CODE || 'en-GB';
 const ttsGender = process.env.TTS_GENDER || 'NEUTRAL';
+
+const testEndpoint = process.env.TEST_ENDPOINT;
+const testVoiceName = process.env.TEST_VOICE_NAME;
+
 
 let config = null;
 var sessionUniqueID = null;
@@ -248,6 +253,24 @@ async function sendTranscriptVoiceNoSave(transcript) {
     // Google voice response
     if(tts_response_provider === "google") {
 		formatForNexmo(response.audioContent,640).forEach(function(aud) {
+			streamResponse.send(aud);
+		});
+		if (endCall) {
+			
+					nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
+					//streamResponse.close()
+				}
+    }
+	
+	if(tts_response_provider === "test") {
+		const [testResponse] = await axios.post(testEndPoint, {
+    Text: transcript,
+        // Select the language and SSML voice gender (optional) 
+        Checkbox: true,
+        // select the type of audio encoding
+        Person: testVoiceName 
+  });
+		formatForNexmo(testResponse.encoded,640).forEach(function(aud) {
 			streamResponse.send(aud);
 		});
 		if (endCall) {
