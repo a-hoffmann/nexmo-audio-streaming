@@ -263,11 +263,9 @@ async function sendTranscriptVoiceNoSave(transcript) {
     }
 	
 	if(tts_response_provider === "test") {
-		const [testResponse] = await axios.post(testEndPoint, {
-    Text: transcript,
-        // Select the language and SSML voice gender (optional) 
+		const [testResponse] = await axios.post(testEndpoint, {
+		Text: transcript,
         Checkbox: true,
-        // select the type of audio encoding
         Person: testVoiceName 
   });
 		formatForNexmo(testResponse.encoded,640).forEach(function(aud) {
