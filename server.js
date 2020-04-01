@@ -171,7 +171,7 @@ app.ws('/socket', (ws, req) => {
 
         // Send the user input as byte array to Google TTS
         else {
-            sendStream(msg) //get the final result of this
+            sendStream(msg)
         }
     });
 
@@ -211,8 +211,10 @@ async function processContent(transcript) {
     await TIE.sendInput(process.env.TENEO_ENGINE_URL, sessionUniqueID, { text: transcript, channel: 'IVR'} )
         .then((response) => {
                 console.log("Speech-to-text user output: " + transcript);
-                transcript = striptags(response.output.text);
-                console.log("Bot response: " + transcript);
+				//insert SSML here
+				transcript = response.output.text
+                if (!response.output.parameters.isSSML) { striptags(transcript) }
+				console.log("Bot response: " + transcript);
 				if (response.output.parameters.endCall==="true") {
 					console.log('set endcall to true');
 					endCall=true;
@@ -234,7 +236,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
 
     // Performs the text-to-speech request
     const [response] = await google_tts_client.synthesizeSpeech({
-        input: {text: transcript},
+        input: (transcript.startsWith("<speak")) ? {text: transcript} : {ssml: transcript},
         // Select the language and SSML voice gender (optional) 
         voice: {languageCode: ttsLang, ssmlGender: 'FEMALE'},
         // select the type of audio encoding
