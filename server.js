@@ -271,10 +271,9 @@ async function sendTranscriptVoiceNoSave(transcript) {
         Person: testVoiceName 
   }).then(function (testResponse) {
 	  console.log(testResponse.data.message);
-	  streamResponse.send(Buffer.from(testResponse.data.encoded,'base64'));
-		/*formatForNexmo(Buffer.from(testResponse.data.encoded,'base64'),640).forEach(function(aud) {
+	  formatForNexmo(Buffer.from(testResponse.data.encoded,'base64'),1600).forEach(function(aud) {
 			streamResponse.send(aud);
-		});*/
+		});
 		if (endCall) {
 			
 					nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
