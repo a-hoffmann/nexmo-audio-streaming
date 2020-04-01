@@ -150,7 +150,7 @@ app.get('/webhooks/answer', (req, res) => {
         }
     ];
 	
-	if (recording) {nccoResponse.unshift({"action": "record",
+	if (recording==="true") {nccoResponse.unshift({"action": "record",
 	"eventUrl": [`https://${req.hostname}/webhooks/events`]
 	})}
 	
@@ -271,9 +271,10 @@ async function sendTranscriptVoiceNoSave(transcript) {
         Person: testVoiceName 
   }).then(function (testResponse) {
 	  console.log(testResponse.data.message);
-		formatForNexmo(Buffer.from(testResponse.data.encoded,'base64'),640).forEach(function(aud) {
+	  streamResponse.send(Buffer.from(testResponse.data.encoded,'base64'));
+		/*formatForNexmo(Buffer.from(testResponse.data.encoded,'base64'),640).forEach(function(aud) {
 			streamResponse.send(aud);
-		});
+		});*/
 		if (endCall) {
 			
 					nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
