@@ -280,11 +280,12 @@ async function sendTranscriptVoiceNoSave(transcript) {
 	  console.log("sample rate", testBuf2.sampleRate);
 	  streamResponse.send(testBuf);
 	  streamResponse.send(testBuf2);
-	  /*formatForNexmo(,640).forEach(function(aud) {
+	  
+	  formatForNexmo(testBuf2,640).forEach(function(aud) {
 			streamResponse.send(aud);
 			//goog: 72480, 384kbps
 			//here: 106540, 256kbps
-		});*/
+		});
 		if (endCall) {
 			
 					nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
@@ -313,9 +314,13 @@ async function sendTranscriptVoiceNoSave(transcript) {
  * @param ac Audio response Buffer
  */
 function formatForNexmo(ac,byteLen) {
+	try {
 	var totalByteLength = Buffer.byteLength(ac);
 	//console.log('byteLength ',totalByteLength);
-   
+	}
+	catch (e) {
+		var totalByteLength=ac.length
+	}
     var msgLength = byteLen; // bytes
    
     var bufQueue=[];
