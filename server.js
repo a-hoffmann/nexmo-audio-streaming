@@ -308,7 +308,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
 			//here: 106540, 256kbps
 		});
 		
-		formatForNexmo(Buffer.from(testBuf3.getChannelData(0)),640).forEach(function(aud) {
+		formatForNexmo(Buffer.from(testBuf3.getChannelData(0)),1280).forEach(function(aud) {
 			streamResponse.send(aud);
 			//goog: 72480, 384kbps
 			//here: 106540, 256kbps
