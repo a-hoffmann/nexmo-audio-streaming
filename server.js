@@ -273,22 +273,18 @@ async function sendTranscriptVoiceNoSave(transcript) {
   }).then(function (testResponse) {
 	  console.log(testResponse.data.message);
 	  var testBufArray = Buffer.from(testResponse.data.encoded, 'base64');
-	  var testBuf = createBuffer(testResponse.data.encoded);
-	  console.log("length", testBuf.length);
-	  console.log("sample rate", testBuf.sampleRate);
-	  console.log("number of channels", testBuf.numberOfChannels);
+	  var testBuf1 = createBuffer(testResponse.data.encoded);
+	  console.log("length", testBuf1.length);
+	  console.log("sample rate", testBuf1.sampleRate);
+	  console.log("number of channels", testBuf1.numberOfChannels);
 	  var testBuf2 = createBuffer(testResponse.data.encoded, '22050');
 	  console.log("length", testBuf2.length);
 	  console.log("sample rate", testBuf2.sampleRate);
 	  console.log("number of channels", testBuf2.numberOfChannels);
-	  //console.log("audiobuffer itself", testBuf2);
-	  //streamResponse.send(testBuf);
 	  var testBuf3 = createBuffer(testResponse.data.encoded, '16000');
 	  console.log("length", testBuf3.length);
 	  console.log("sample rate", testBuf3.sampleRate);
 	  console.log("number of channels", testBuf3.numberOfChannels);
-	  //console.log("audiobuffer itself", testBuf2);
-	  //streamResponse.send(testBuf);
 	  
 	  formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),640).forEach(function(aud) {
 			streamResponse.send(aud);
