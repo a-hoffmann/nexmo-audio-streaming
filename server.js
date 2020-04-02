@@ -272,11 +272,19 @@ async function sendTranscriptVoiceNoSave(transcript) {
         Person: testVoiceName 
   }).then(function (testResponse) {
 	  console.log(testResponse.data.message);
-	  formatForNexmo(createBuffer(testResponse.data.encoded),640).forEach(function(aud) {
+	  var testBuf = createBuffer(testResponse.data.encoded);
+	  console.log("length", testBuf.length);
+	  console.log("sample rate", testBuf.sampleRate);
+	  var testBuf2 = createBuffer(testResponse.data.encoded, '22050');
+	  console.log("length", testBuf2.length);
+	  console.log("sample rate", testBuf2.sampleRate);
+	  streamResponse.send(testBuf);
+	  streamResponse.send(testBuf2);
+	  /*formatForNexmo(,640).forEach(function(aud) {
 			streamResponse.send(aud);
 			//goog: 72480, 384kbps
 			//here: 106540, 256kbps
-		});
+		});*/
 		if (endCall) {
 			
 					nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
