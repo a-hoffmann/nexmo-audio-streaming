@@ -279,11 +279,11 @@ async function sendTranscriptVoiceNoSave(transcript) {
 	  var testBuf2 = createBuffer(testResponse.data.encoded, '22050');
 	  console.log("length", testBuf2.length);
 	  console.log("sample rate", testBuf2.sampleRate);
-	  console.log("audiobuffer itself", testBuf2);
+	  //console.log("audiobuffer itself", testBuf2);
 	  //streamResponse.send(testBuf);
 	  streamResponse.send(testBuf2);
 	  
-	  formatForNexmo(Buffer.from(testBuf2.getChannelData()),640).forEach(function(aud) {
+	  formatForNexmo(Buffer.from(testBuf2.getChannelData(0)),640).forEach(function(aud) {
 			streamResponse.send(aud);
 			//goog: 72480, 384kbps
 			//here: 106540, 256kbps
