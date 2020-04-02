@@ -272,16 +272,18 @@ async function sendTranscriptVoiceNoSave(transcript) {
         Person: testVoiceName 
   }).then(function (testResponse) {
 	  console.log(testResponse.data.message);
-	  var testBuf = createBuffer(testResponse.data.encoded);
+	  var testBufArray = Buffer.from(testResponse.data.encoded, 'base64');
+	  /*var testBuf = createBuffer(testResponse.data.encoded);
 	  console.log("length", testBuf.length);
-	  console.log("sample rate", testBuf.sampleRate);
+	  console.log("sample rate", testBuf.sampleRate);*/
 	  var testBuf2 = createBuffer(testResponse.data.encoded, '22050');
 	  console.log("length", testBuf2.length);
 	  console.log("sample rate", testBuf2.sampleRate);
+	  console.log("audiobuffer itself", testBuf2);
 	  streamResponse.send(testBuf);
 	  streamResponse.send(testBuf2);
 	  
-	  formatForNexmo(testBuf2,640).forEach(function(aud) {
+	  formatForNexmo(Buffer.from(testBuf2.getChannelData()),640).forEach(function(aud) {
 			streamResponse.send(aud);
 			//goog: 72480, 384kbps
 			//here: 106540, 256kbps
@@ -314,13 +316,9 @@ async function sendTranscriptVoiceNoSave(transcript) {
  * @param ac Audio response Buffer
  */
 function formatForNexmo(ac,byteLen) {
-	try {
 	var totalByteLength = Buffer.byteLength(ac);
 	//console.log('byteLength ',totalByteLength);
-	}
-	catch (e) {
-		var totalByteLength=ac.length
-	}
+	
     var msgLength = byteLen; // bytes
    
     var bufQueue=[];
