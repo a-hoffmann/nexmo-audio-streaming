@@ -8,6 +8,7 @@ const app = express();
 const expressWs = require('express-ws')(app);
 var header = require("waveheader");
 const axios = require('axios');
+var createBuffer = require('audio-buffer-from')
 
 
 const Nexmo = require('nexmo');
@@ -271,7 +272,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
         Person: testVoiceName 
   }).then(function (testResponse) {
 	  console.log(testResponse.data.message);
-	  formatForNexmo(Buffer.from(testResponse.data.encoded,'base64'),640).forEach(function(aud) {
+	  formatForNexmo(createBuffer(testResponse.data.encoded,'base64'),640).forEach(function(aud) {
 			streamResponse.send(aud);
 			//goog: 72480, 384kbps
 			//here: 106540, 256kbps
