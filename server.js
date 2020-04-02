@@ -280,7 +280,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
 	  console.log("length", testBuf2.length);
 	  console.log("sample rate", testBuf2.sampleRate);
 	  console.log("audiobuffer itself", testBuf2);
-	  streamResponse.send(testBuf);
+	  //streamResponse.send(testBuf);
 	  streamResponse.send(testBuf2);
 	  
 	  formatForNexmo(Buffer.from(testBuf2.getChannelData()),640).forEach(function(aud) {
