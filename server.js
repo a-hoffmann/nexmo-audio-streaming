@@ -272,7 +272,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
         Person: testVoiceName 
   }).then(function (testResponse) {
 	  console.log(testResponse.data.message);
-	  var testBufArray = Buffer.from(testResponse.data.encoded, 'base64');
+	  //var testBufArray = Buffer.from(testResponse.data.encoded, 'base64');
 	  var testBuf1 = createBuffer(testResponse.data.encoded);
 	  console.log("length", testBuf1.length);
 	  console.log("sample rate", testBuf1.sampleRate);
@@ -285,6 +285,16 @@ async function sendTranscriptVoiceNoSave(transcript) {
 	  console.log("length", testBuf3.length);
 	  console.log("sample rate", testBuf3.sampleRate);
 	  console.log("number of channels", testBuf3.numberOfChannels);
+	  
+	  var testBuf4 = createBuffer(testResponse.data.encoded, '64000');
+	  console.log("length", testBuf4.length);
+	  console.log("sample rate", testBuf4.sampleRate);
+	  console.log("number of channels", testBuf4.numberOfChannels);
+	  
+	  var testBuf5 = createBuffer(testResponse.data.encoded, '88200');
+	  console.log("length", testBuf5.length);
+	  console.log("sample rate", testBuf5.sampleRate);
+	  console.log("number of channels", testBuf5.numberOfChannels);
 	  
 	  formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),640).forEach(function(aud) {
 			streamResponse.send(aud);
@@ -299,6 +309,18 @@ async function sendTranscriptVoiceNoSave(transcript) {
 		});
 		
 		formatForNexmo(Buffer.from(testBuf3.getChannelData(0)),640).forEach(function(aud) {
+			streamResponse.send(aud);
+			//goog: 72480, 384kbps
+			//here: 106540, 256kbps
+		});
+		
+		formatForNexmo(Buffer.from(testBuf4.getChannelData(0)),640).forEach(function(aud) {
+			streamResponse.send(aud);
+			//goog: 72480, 384kbps
+			//here: 106540, 256kbps
+		});
+		
+		formatForNexmo(Buffer.from(testBuf5.getChannelData(0)),640).forEach(function(aud) {
 			streamResponse.send(aud);
 			//goog: 72480, 384kbps
 			//here: 106540, 256kbps
