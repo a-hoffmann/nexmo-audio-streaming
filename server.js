@@ -291,6 +291,9 @@ async function sendTranscriptVoiceNoSave(transcript) {
 	  var sampler = new Resampler(64000,44100,  1, testBuf1.length);
 	  var resampled = sampler.resampler(testBuf1.getChannelData(0));
 	  
+	   var downsampler = new Resampler(16000,64000,  1, testBuf1.length);
+	  var resampled_down = downsampler.resampler(resampled);
+	  
 	  
 	  var testBuf4 = createBuffer(testResponse.data.encoded, '64000');
 	  console.log("length", testBuf4.length);
@@ -328,7 +331,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
 			//here: 106540, 256kbps
 		});
 		
-		formatForNexmo(Buffer.from(resampled),2560).forEach(function(aud) {
+		formatForNexmo(Buffer.from(resampled_down),640).forEach(function(aud) {
 			streamResponse.send(aud);
 			
 		});
