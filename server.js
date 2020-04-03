@@ -288,7 +288,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
 	  console.log("sample rate", testBuf3.sampleRate);
 	  console.log("number of channels", testBuf3.numberOfChannels);
 	  
-	  sampler = new Resampler(64000,44100,  1, testBuf1.length);
+	  var sampler = new Resampler(64000,44100,  1, testBuf1.length);
 	  var resampled = sampler.resampler(testBuf1.getChannelData(0));
 	  
 	  
