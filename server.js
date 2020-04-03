@@ -10,7 +10,7 @@ var header = require("waveheader");
 const axios = require('axios');
 var createBuffer = require('audio-buffer-from');
 
-var resampler = require('./resampler');
+var Resampler = require('./resampler');
 
 
 const Nexmo = require('nexmo');
