@@ -8,7 +8,9 @@ const app = express();
 const expressWs = require('express-ws')(app);
 var header = require("waveheader");
 const axios = require('axios');
-var createBuffer = require('audio-buffer-from')
+var createBuffer = require('audio-buffer-from');
+
+var resampler = require('./resampler');
 
 
 const Nexmo = require('nexmo');
@@ -200,7 +202,7 @@ async function sendStream(msg) {
 }
 
 /**
- * Google TTS function. When the data has been retrieved from Google cloud, processing from text to speech is started.
+ * Google STT function. When the data has been retrieved from Google cloud, processing from text to response speech is started.
  */
 const recognizeStream = google_stt_client
     .streamingRecognize(stream_request)
@@ -286,6 +288,10 @@ async function sendTranscriptVoiceNoSave(transcript) {
 	  console.log("sample rate", testBuf3.sampleRate);
 	  console.log("number of channels", testBuf3.numberOfChannels);
 	  
+	  sampler = new Resampler(64000,44100,  1, testBuf1.length);
+	  var resampled = sampler.resampler(testBuf1.getChannelData(0));
+	  
+	  
 	  var testBuf4 = createBuffer(testResponse.data.encoded, '64000');
 	  console.log("length", testBuf4.length);
 	  console.log("sample rate", testBuf4.sampleRate);
@@ -320,6 +326,11 @@ async function sendTranscriptVoiceNoSave(transcript) {
 			streamResponse.send(aud);
 			//goog: 72480, 384kbps
 			//here: 106540, 256kbps
+		});
+		
+		formatForNexmo(Buffer.from(resampled.getChannelData(0)),2560).forEach(function(aud) {
+			streamResponse.send(aud);
+			
 		});
 		if (endCall) {
 			
