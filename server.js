@@ -314,12 +314,12 @@ async function sendTranscriptVoiceNoSave(transcript) {
 		
 		});
 		
-		formatForNexmo(Buffer.from(testBuf3.getChannelData(0)),640).forEach(function(aud) {
+		formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),1000).forEach(function(aud) {
 			streamResponse.send(aud);
 		
 		});
 		
-		formatForNexmo(Buffer.from(testBuf4.getChannelData(0)),640).forEach(function(aud) {
+		formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),1280).forEach(function(aud) {
 			streamResponse.send(aud);
 			
 		});
