@@ -319,12 +319,12 @@ async function sendTranscriptVoiceNoSave(transcript) {
 		
 		});
 		
-		formatForNexmo(Buffer.from(testBuf4.getChannelData(0)),2560).forEach(function(aud) {
+		formatForNexmo(Buffer.from(testBuf4.getChannelData(0)),640).forEach(function(aud) {
 			streamResponse.send(aud);
 			
 		});
 		
-		formatForNexmo(Buffer.from(testBuf5.getChannelData(0)),3528).forEach(function(aud) {
+		formatForNexmo(Buffer.from(testBuf5.getChannelData(0)),640).forEach(function(aud) {
 			streamResponse.send(aud);
 			//goog: 72480, 384kbps
 			//here: 106540, 256kbps
