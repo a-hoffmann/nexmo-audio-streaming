@@ -298,29 +298,25 @@ async function sendTranscriptVoiceNoSave(transcript) {
 	  
 	  formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),640).forEach(function(aud) {
 			streamResponse.send(aud);
-			//goog: 72480, 384kbps
-			//here: 106540, 256kbps
+		
 		});
 		
-		formatForNexmo(Buffer.from(testBuf2.getChannelData(0)),640).forEach(function(aud) {
+		formatForNexmo(Buffer.from(testBuf2.getChannelData(0)),882).forEach(function(aud) {
 			streamResponse.send(aud);
-			//goog: 72480, 384kbps
-			//here: 106540, 256kbps
+		
 		});
 		
-		formatForNexmo(Buffer.from(testBuf3.getChannelData(0)),1280).forEach(function(aud) {
+		formatForNexmo(Buffer.from(testBuf3.getChannelData(0)),640).forEach(function(aud) {
 			streamResponse.send(aud);
-			//goog: 72480, 384kbps
-			//here: 106540, 256kbps
+		
 		});
 		
-		formatForNexmo(Buffer.from(testBuf4.getChannelData(0)),640).forEach(function(aud) {
+		formatForNexmo(Buffer.from(testBuf4.getChannelData(0)),2560).forEach(function(aud) {
 			streamResponse.send(aud);
-			//goog: 72480, 384kbps
-			//here: 106540, 256kbps
+			
 		});
 		
-		formatForNexmo(Buffer.from(testBuf5.getChannelData(0)),640).forEach(function(aud) {
+		formatForNexmo(Buffer.from(testBuf5.getChannelData(0)),3528).forEach(function(aud) {
 			streamResponse.send(aud);
 			//goog: 72480, 384kbps
 			//here: 106540, 256kbps
