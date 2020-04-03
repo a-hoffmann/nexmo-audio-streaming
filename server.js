@@ -279,7 +279,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
 	  console.log("length", testBuf1.length);
 	  console.log("sample rate", testBuf1.sampleRate);
 	  console.log("number of channels", testBuf1.numberOfChannels);
-	  var testBuf2 = createBuffer(testResponse.data.encoded, '22050');
+	  /*var testBuf2 = createBuffer(testResponse.data.encoded, '22050');
 	  console.log("length", testBuf2.length);
 	  console.log("sample rate", testBuf2.sampleRate);
 	  console.log("number of channels", testBuf2.numberOfChannels);
@@ -297,7 +297,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
 	  var testBuf5 = createBuffer(testResponse.data.encoded, '88200');
 	  console.log("length", testBuf5.length);
 	  console.log("sample rate", testBuf5.sampleRate);
-	  console.log("number of channels", testBuf5.numberOfChannels);
+	  console.log("number of channels", testBuf5.numberOfChannels);*/
 	  
 	  formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),320).forEach(function(aud) {
 			streamResponse.send(aud);
@@ -309,7 +309,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
 		
 		});
 		
-		formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),882).forEach(function(aud) {
+		formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),860).forEach(function(aud) {
 			streamResponse.send(aud);
 		
 		});
@@ -324,11 +324,6 @@ async function sendTranscriptVoiceNoSave(transcript) {
 			
 		});
 		
-		formatForNexmo(Buffer.from(testBuf5.getChannelData(0)),640).forEach(function(aud) {
-			streamResponse.send(aud);
-			//goog: 72480, 384kbps
-			//here: 106540, 256kbps
-		});
 		if (endCall) {
 			
 					nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
