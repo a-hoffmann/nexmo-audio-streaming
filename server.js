@@ -288,12 +288,6 @@ async function sendTranscriptVoiceNoSave(transcript) {
 	  console.log("sample rate", testBuf3.sampleRate);
 	  console.log("number of channels", testBuf3.numberOfChannels);
 	  
-	  var sampler = new Resampler(64000,44100,  1, testBuf1.length);
-	  var resampled = sampler.resampler(testBuf1.getChannelData(0));
-	  
-	   var downsampler = new Resampler(16000,64000,  1, testBuf1.length);
-	  var resampled_down = downsampler.resampler(resampled);
-	  
 	  
 	  var testBuf4 = createBuffer(testResponse.data.encoded, '64000');
 	  console.log("length", testBuf4.length);
@@ -305,12 +299,17 @@ async function sendTranscriptVoiceNoSave(transcript) {
 	  console.log("sample rate", testBuf5.sampleRate);
 	  console.log("number of channels", testBuf5.numberOfChannels);
 	  
-	  formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),640).forEach(function(aud) {
+	  formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),320).forEach(function(aud) {
 			streamResponse.send(aud);
 		
 		});
 		
-		formatForNexmo(Buffer.from(testBuf2.getChannelData(0)),882).forEach(function(aud) {
+		formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),640).forEach(function(aud) {
+			streamResponse.send(aud);
+		
+		});
+		
+		formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),882).forEach(function(aud) {
 			streamResponse.send(aud);
 		
 		});
@@ -329,11 +328,6 @@ async function sendTranscriptVoiceNoSave(transcript) {
 			streamResponse.send(aud);
 			//goog: 72480, 384kbps
 			//here: 106540, 256kbps
-		});
-		
-		formatForNexmo(Buffer.from(resampled_down),640).forEach(function(aud) {
-			streamResponse.send(aud);
-			
 		});
 		if (endCall) {
 			
