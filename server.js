@@ -328,7 +328,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
 			//here: 106540, 256kbps
 		});
 		
-		formatForNexmo(Buffer.from(resampled.getChannelData(0)),2560).forEach(function(aud) {
+		formatForNexmo(Buffer.from(resampled),2560).forEach(function(aud) {
 			streamResponse.send(aud);
 			
 		});
