@@ -250,14 +250,14 @@ async function sendTranscriptVoiceNoSave(transcript) {
         // Select the language and SSML voice gender (optional) 
         voice: {languageCode: ttsLang, ssmlGender: 'FEMALE'},
         // select the type of audio encoding
-        audioConfig: {audioEncoding: 'LINEAR16', sampleRateHertz: 16000}, 
+        audioConfig: {audioEncoding: 'LINEAR16', sampleRateHertz: 8000}, 
     });
 	
 	
 
     // Google voice response
     if(tts_response_provider === "google") {
-		formatForNexmo(response.audioContent,640).forEach(function(aud) {
+		formatForNexmo(response.audioContent,320).forEach(function(aud) {
 			streamResponse.send(aud);
 		});
 		if (endCall) {
