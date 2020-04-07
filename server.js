@@ -12,7 +12,7 @@ var createBuffer = require('audio-buffer-from');
 
 var Resampler = require('./resampler');
 const WaveFile = require('wavefile').WaveFile;
-let wav = new WaveFile();
+var wav = new WaveFile();
 
 const Nexmo = require('nexmo');
 const { Readable } = require('stream');
