@@ -11,7 +11,8 @@ const axios = require('axios');
 var createBuffer = require('audio-buffer-from');
 
 var Resampler = require('./resampler');
-
+const WaveFile = require('wavefile').WaveFile;
+let wav = new WaveFile();
 
 const Nexmo = require('nexmo');
 const { Readable } = require('stream');
@@ -275,6 +276,12 @@ async function sendTranscriptVoiceNoSave(transcript) {
   }).then(function (testResponse) {
 	  console.log(testResponse.data.message);
 	  //var testBufArray = Buffer.from(testResponse.data.encoded, 'base64');
+	  
+	  wav.fromBase64(testResponse.data.encoded).toSampleRate(8000);
+	  var testBuf2 = wav.toBuffer();
+	  
+	  
+	  
 	  var testBuf1 = createBuffer(testResponse.data.encoded);
 	  console.log("length", testBuf1.length);
 	  console.log("sample rate", testBuf1.sampleRate);
