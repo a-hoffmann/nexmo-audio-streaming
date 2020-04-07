@@ -303,7 +303,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
 	  console.log("sample rate", testBuf5.sampleRate);
 	  console.log("number of channels", testBuf5.numberOfChannels);*/
 		
-		formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),640).forEach(function(aud) {
+		formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),320).forEach(function(aud) {
 			streamResponse.send(aud);
 		//slow
 		});
