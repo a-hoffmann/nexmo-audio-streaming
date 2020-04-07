@@ -275,61 +275,12 @@ async function sendTranscriptVoiceNoSave(transcript) {
         Person: testVoiceName 
   }).then(function (testResponse) {
 	  console.log(testResponse.data.message);
-	  //var testBufArray = Buffer.from(testResponse.data.encoded, 'base64');
 	  wav.fromBase64(testResponse.data.encoded);
-	  wav.toSampleRate(8000);
-		// this is the same as:
-		// wav.toSampleRate(8000, {method: "cubic"})
-	  var testBuf2 = wav.toBuffer();
+	  wav.toSampleRate(8000, {method: "cubic"}));
 	  
-	  
-	  
-	  var testBuf1 = createBuffer(testResponse.data.encoded);
-	  console.log("length", testBuf1.length);
-	  console.log("sample rate", testBuf1.sampleRate);
-	  console.log("number of channels", testBuf1.numberOfChannels);
-	  
-	  //copy into a smaller buf?
-	  
-	  
-	  /*var testBuf2 = createBuffer(testResponse.data.encoded, '22050');
-	  console.log("length", testBuf2.length);
-	  console.log("sample rate", testBuf2.sampleRate);
-	  console.log("number of channels", testBuf2.numberOfChannels);
-	  var testBuf3 = createBuffer(testResponse.data.encoded, '16000');
-	  console.log("length", testBuf3.length);
-	  console.log("sample rate", testBuf3.sampleRate);
-	  console.log("number of channels", testBuf3.numberOfChannels);
-	  
-	  
-	  var testBuf4 = createBuffer(testResponse.data.encoded, '64000');
-	  console.log("length", testBuf4.length);
-	  console.log("sample rate", testBuf4.sampleRate);
-	  console.log("number of channels", testBuf4.numberOfChannels);
-	  
-	  var testBuf5 = createBuffer(testResponse.data.encoded, '88200');
-	  console.log("length", testBuf5.length);
-	  console.log("sample rate", testBuf5.sampleRate);
-	  console.log("number of channels", testBuf5.numberOfChannels);*/
-		
-		formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),320).forEach(function(aud) {
+		formatForNexmo(wav.toBuffer(),320).forEach(function(aud) {
 			streamResponse.send(aud);
 		//slow
-		});
-		
-		formatForNexmo(Buffer.from(testBuf2),320).forEach(function(aud) {
-			streamResponse.send(aud);
-		
-		});
-		
-		formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),1000).forEach(function(aud) {
-			streamResponse.send(aud);
-		
-		});
-		
-		formatForNexmo(Buffer.from(testBuf2),320).forEach(function(aud) {
-			streamResponse.send(aud);
-			
 		});
 		
 		if (endCall) {
