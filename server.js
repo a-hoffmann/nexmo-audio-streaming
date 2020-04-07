@@ -315,7 +315,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
 		//slow
 		});
 		
-		formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),860).forEach(function(aud) {
+		formatForNexmo(Buffer.from(testBuf2.getChannelData(0)),320).forEach(function(aud) {
 			streamResponse.send(aud);
 		
 		});
@@ -325,7 +325,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
 		
 		});
 		
-		formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),1280).forEach(function(aud) {
+		formatForNexmo(Buffer.from(testBuf2.getChannelData(0)),320).forEach(function(aud) {
 			streamResponse.send(aud);
 			
 		});
