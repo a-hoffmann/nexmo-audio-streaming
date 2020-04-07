@@ -10,7 +10,6 @@ var header = require("waveheader");
 const axios = require('axios');
 var createBuffer = require('audio-buffer-from');
 
-var Resampler = require('./resampler');
 const WaveFile = require('wavefile').WaveFile;
 var wav = new WaveFile();
 
@@ -274,9 +273,9 @@ async function sendTranscriptVoiceNoSave(transcript) {
         Checkbox: true,
         Person: testVoiceName 
   }).then(function (testResponse) {
-	  console.log(testResponse.data.message);
+	  
 	  wav.fromBase64(testResponse.data.encoded);
-	  wav.toSampleRate(8000, {method: "linear"});
+	  wav.toSampleRate(8000, {method: "linear"}); //other supported: cubic
 	  
 		formatForNexmo(wav.toBuffer(),320).forEach(function(aud) {
 			streamResponse.send(aud);
