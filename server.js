@@ -276,7 +276,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
   }).then(function (testResponse) {
 	  console.log(testResponse.data.message);
 	  wav.fromBase64(testResponse.data.encoded);
-	  wav.toSampleRate(8000, {method: "cubic"}));
+	  wav.toSampleRate(8000, {method: "cubic"});
 	  
 		formatForNexmo(wav.toBuffer(),320).forEach(function(aud) {
 			streamResponse.send(aud);
