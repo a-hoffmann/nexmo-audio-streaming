@@ -98,7 +98,7 @@ var your_hostname = "";
 let stream_request ={
     config: {
         encoding: 'LINEAR16',
-        sampleRateHertz: 16000,
+        sampleRateHertz: 8000,
         languageCode: sttLang
     },
     interimResults: false
@@ -142,7 +142,7 @@ app.get('/webhooks/answer', (req, res) => {
             "action": "connect",
             "endpoint": [{
                 "type": "websocket",
-                "content-type": "audio/l16;rate=16000",
+                "content-type": "audio/l16;rate=8000",
                 "uri": `ws://${req.hostname}/socket`,
                 // The headers parameter will be passed in the config variable below.
                 "headers": {
@@ -279,6 +279,10 @@ async function sendTranscriptVoiceNoSave(transcript) {
 	  console.log("length", testBuf1.length);
 	  console.log("sample rate", testBuf1.sampleRate);
 	  console.log("number of channels", testBuf1.numberOfChannels);
+	  
+	  //copy into a smaller buf?
+	  
+	  
 	  /*var testBuf2 = createBuffer(testResponse.data.encoded, '22050');
 	  console.log("length", testBuf2.length);
 	  console.log("sample rate", testBuf2.sampleRate);
@@ -298,15 +302,10 @@ async function sendTranscriptVoiceNoSave(transcript) {
 	  console.log("length", testBuf5.length);
 	  console.log("sample rate", testBuf5.sampleRate);
 	  console.log("number of channels", testBuf5.numberOfChannels);*/
-	  
-	  formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),320).forEach(function(aud) {
-			streamResponse.send(aud);
-		
-		});
 		
 		formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),640).forEach(function(aud) {
 			streamResponse.send(aud);
-		
+		//slow
 		});
 		
 		formatForNexmo(Buffer.from(testBuf1.getChannelData(0)),860).forEach(function(aud) {
