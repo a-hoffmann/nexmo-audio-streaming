@@ -276,8 +276,10 @@ async function sendTranscriptVoiceNoSave(transcript) {
   }).then(function (testResponse) {
 	  console.log(testResponse.data.message);
 	  //var testBufArray = Buffer.from(testResponse.data.encoded, 'base64');
-	  
-	  wav.fromBase64(testResponse.data.encoded).toSampleRate(8000);
+	  wav.fromBase64(testResponse.data.encoded);
+	  wav.toSampleRate(8000);
+		// this is the same as:
+		// wav.toSampleRate(8000, {method: "cubic"})
 	  var testBuf2 = wav.toBuffer();
 	  
 	  
