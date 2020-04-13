@@ -95,10 +95,14 @@ var your_hostname = "";
  * @type {{interimResults: boolean, config: {sampleRateHertz: number, encoding: string, languageCode: string}}}
  */
 
+
+// Bumped the Sample Rate to 16000 for slightly better audio
+// Samples double as a result: 640 at 16000 instead of 320 at 8000
+
 let stream_request ={
     config: {
         encoding: 'LINEAR16',
-        sampleRateHertz: 8000,
+        sampleRateHertz: 16000,
         languageCode: sttLang
     },
     interimResults: false
@@ -142,7 +146,7 @@ app.get('/webhooks/answer', (req, res) => {
             "action": "connect",
             "endpoint": [{
                 "type": "websocket",
-                "content-type": "audio/l16;rate=8000",
+                "content-type": "audio/l16;rate=16000",
                 "uri": `ws://${req.hostname}/socket`,
                 // The headers parameter will be passed in the config variable below.
                 "headers": {
@@ -250,14 +254,14 @@ async function sendTranscriptVoiceNoSave(transcript) {
         // Select the language and SSML voice gender (optional) 
         voice: {languageCode: ttsLang, ssmlGender: 'FEMALE'},
         // select the type of audio encoding
-        audioConfig: {audioEncoding: 'LINEAR16', sampleRateHertz: 8000}, 
+        audioConfig: {audioEncoding: 'LINEAR16', sampleRateHertz: 16000}, 
     });
 	
 	
 
     // Google voice response
     if(tts_response_provider === "google") {
-		formatForNexmo(response.audioContent,320).forEach(function(aud) {
+		formatForNexmo(response.audioContent,640).forEach(function(aud) {
 			streamResponse.send(aud);
 		});
 		if (endCall) {
@@ -275,9 +279,9 @@ async function sendTranscriptVoiceNoSave(transcript) {
   }).then(function (testResponse) {
 	  
 	  wav.fromBase64(testResponse.data.encoded);
-	  wav.toSampleRate(8000, {method: "linear"}); //other supported: cubic
+	  wav.toSampleRate(16000, {method: "linear"}); //other supported: cubic
 	  
-		formatForNexmo(wav.toBuffer(),320).forEach(function(aud) {
+		formatForNexmo(wav.toBuffer(),640).forEach(function(aud) {
 			streamResponse.send(aud);
 		//slow
 		});
