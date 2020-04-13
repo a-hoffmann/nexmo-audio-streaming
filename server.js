@@ -261,7 +261,9 @@ async function sendTranscriptVoiceNoSave(transcript) {
 
     // Google voice response
     if(tts_response_provider === "google") {
+		console.log(response.audioContent.length);
 		formatForNexmo(response.audioContent,640).forEach(function(aud) {
+			console.log(aud.length);
 			streamResponse.send(aud);
 		});
 		if (endCall) {
