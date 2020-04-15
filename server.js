@@ -248,22 +248,23 @@ async function processContent(transcript) {
 
 async function sendTranscriptVoiceNoSave(transcript) {
 
-    // Performs the text-to-speech request
-    const [response] = await google_tts_client.synthesizeSpeech({
+var reqToSynthethize = {
         input: (transcript.startsWith("<speak")) ? {ssml: transcript} : {text: transcript},
         // Select the language and SSML voice gender (optional) 
         voice: {languageCode: ttsLang, ssmlGender: 'FEMALE'},
         // select the type of audio encoding
         audioConfig: {audioEncoding: 'LINEAR16', sampleRateHertz: 16000}, 
-    });
+    }
+console.log("reqToSynthethize", reqToSynthethize);
+
+    // Performs the text-to-speech request
+    const [response] = await google_tts_client.synthesizeSpeech(reqToSynthethize);
 	
 	
 
     // Google voice response
     if(tts_response_provider === "google") {
-		console.log(response.audioContent.length);
 		formatForNexmo(response.audioContent,640).forEach(function(aud) {
-			console.log(aud.length);
 			streamResponse.send(aud);
 		});
 		if (endCall) {
@@ -285,7 +286,6 @@ async function sendTranscriptVoiceNoSave(transcript) {
 	  
 		formatForNexmo(wav.toBuffer(),640).forEach(function(aud) {
 			streamResponse.send(aud);
-		//slow
 		});
 		
 		if (endCall) {
