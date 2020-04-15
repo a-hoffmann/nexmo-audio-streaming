@@ -255,7 +255,7 @@ var reqToSynthethize = {
         // select the type of audio encoding
         audioConfig: {audioEncoding: 'LINEAR16', sampleRateHertz: 16000}, 
     }
-console.log("reqToSynthethize", reqToSynthethize);
+//console.log("reqToSynthethize", reqToSynthethize);
 
     // Performs the text-to-speech request
     const [response] = await google_tts_client.synthesizeSpeech(reqToSynthethize);
@@ -300,7 +300,7 @@ console.log("reqToSynthethize", reqToSynthethize);
 
     // Nexmo voice response
     else if(tts_response_provider === "nexmo") {
-        nexmo.calls.talk.start(CALL_UUID, { text: transcript, voice_name: voiceName, loop: 1 }, (err, res) => {
+        nexmo.calls.talk.start(CALL_UUID, { text: transcript, voice_name: voiceName, loop: 0 }, (err, res) => {
             if(err) { console.error(err); }
             else {
                 console.log("Nexmo response sent: " + res);
