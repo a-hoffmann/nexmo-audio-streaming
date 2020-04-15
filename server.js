@@ -300,6 +300,7 @@ var reqToSynthethize = {
 
     // Nexmo voice response
     else if(tts_response_provider === "nexmo") {
+		console.log("sending to call uuid", CALL_UUID);
         nexmo.calls.talk.start(CALL_UUID, { text: transcript, voice_name: voiceName, loop: 0 }, (err, res) => {
             if(err) { console.error(err); }
             else {
