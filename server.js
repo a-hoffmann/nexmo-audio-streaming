@@ -265,6 +265,7 @@ var reqToSynthethize = {
     // Google voice response
     if(tts_response_provider === "google") {
 		formatForNexmo(response.audioContent,640).forEach(function(aud) {
+			console.log(aud.length);
 			streamResponse.send(aud);
 		});
 		if (endCall) {
@@ -318,7 +319,7 @@ var reqToSynthethize = {
  */
 function formatForNexmo(ac,byteLen) {
 	var totalByteLength = Buffer.byteLength(ac);
-	//console.log('byteLength ',totalByteLength);
+	console.log('byteLength ',totalByteLength);
 	
     var msgLength = byteLen; // bytes
    
@@ -326,5 +327,6 @@ function formatForNexmo(ac,byteLen) {
     for (var i=0;i<totalByteLength;i+=msgLength) {
 	    bufQueue.push(ac.slice(i,i+msgLength));
     }
+	console.log("bufQueue length",bufQueue.length);
     return bufQueue;
 }
