@@ -247,18 +247,6 @@ async function processContent(transcript) {
  */
 
 async function sendTranscriptVoiceNoSave(transcript) {
-
-var reqToSynthethize = {
-        input: (transcript.startsWith("<speak")) ? {ssml: transcript} : {text: transcript},
-        // Select the language and SSML voice gender (optional) 
-        voice: {languageCode: ttsLang, ssmlGender: 'FEMALE'},
-        // select the type of audio encoding
-        audioConfig: {audioEncoding: 'LINEAR16', sampleRateHertz: 16000}, 
-    }
-//console.log("reqToSynthethize", reqToSynthethize);
-
-    // Performs the text-to-speech request
-    const [response] = await google_tts_client.synthesizeSpeech(reqToSynthethize);
 	
 	function sendAudioInSequence (item, cb) {
   setTimeout(() => {
@@ -269,18 +257,29 @@ var reqToSynthethize = {
 
     // Google voice response
     if(tts_response_provider === "google") {
+		var reqToSynthethize = {
+        input: (transcript.startsWith("<speak")) ? {ssml: transcript} : {text: transcript},
+        // Select the language and SSML voice gender (optional) 
+        voice: {languageCode: ttsLang, ssmlGender: 'FEMALE'},
+        // select the type of audio encoding
+        audioConfig: {audioEncoding: 'LINEAR16', sampleRateHertz: 16000}, 
+    }
+	
+    // Performs the text-to-speech request
+    const [response] = await google_tts_client.synthesizeSpeech(reqToSynthethize);
+	
 		/*formatForNexmo(response.audioContent,640).forEach(function(aud) {
 			console.log(aud.length);
 			streamResponse.send(aud);
 			console.log("sent");
 		});*/
 		let requestz = formatForNexmo(response.audioContent,640).reduce((promiseChain, item) => {
-    return promiseChain.then(() => new Promise((resolve) => {
-      sendAudioInSequence(item, resolve);
-    }));
-}, Promise.resolve());
+			return promiseChain.then(() => new Promise((resolve) => {
+				sendAudioInSequence(item, resolve);
+			}));
+			}, Promise.resolve());
 
-requestz.then(() => console.log('done'))
+		requestz.then(() => console.log('done'))
 
 		if (endCall) {
 			
@@ -299,9 +298,17 @@ requestz.then(() => console.log('done'))
 	  wav.fromBase64(testResponse.data.encoded);
 	  wav.toSampleRate(16000, {method: "linear"}); //other supported: cubic
 	  
-		formatForNexmo(wav.toBuffer(),640).forEach(function(aud) {
+		/*formatForNexmo(wav.toBuffer(),640).forEach(function(aud) {
 			streamResponse.send(aud);
-		});
+		});*/
+		
+		let requestz = formatForNexmo(wav.toBuffer(),640).reduce((promiseChain, item) => {
+			return promiseChain.then(() => new Promise((resolve) => {
+				sendAudioInSequence(item, resolve);
+			}));
+			}, Promise.resolve());
+
+		requestz.then(() => console.log('done'))
 		
 		if (endCall) {
 			
