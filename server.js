@@ -266,7 +266,8 @@ var reqToSynthethize = {
     if(tts_response_provider === "google") {
 		formatForNexmo(response.audioContent,640).forEach(function(aud) {
 			console.log(aud.length);
-			setTimeout(streamResponse.send(aud),1);
+			streamResponse.send(aud);
+			console.log("sent");
 		});
 		if (endCall) {
 			
