@@ -260,15 +260,28 @@ var reqToSynthethize = {
     // Performs the text-to-speech request
     const [response] = await google_tts_client.synthesizeSpeech(reqToSynthethize);
 	
-	
+	function TestAsyncFunction (item, cb) {
+  setTimeout(() => {
+    streamResponse.send(item);
+    cb();
+  }, 100);
+}
 
     // Google voice response
     if(tts_response_provider === "google") {
-		formatForNexmo(response.audioContent,640).forEach(function(aud) {
+		/*formatForNexmo(response.audioContent,640).forEach(function(aud) {
 			console.log(aud.length);
 			streamResponse.send(aud);
 			console.log("sent");
-		});
+		});*/
+		let requestz = formatForNexmo(response.audioContent,640).reduce((promiseChain, item) => {
+    return promiseChain.then(() => new Promise((resolve) => {
+      TestAsyncFunction(item, resolve);
+    }));
+}, Promise.resolve());
+
+requestz.then(() => console.log('done'))
+
 		if (endCall) {
 			
 					nexmo.calls.update(CALL_UUID,{action:'hangup'},console.log('call ended'))
