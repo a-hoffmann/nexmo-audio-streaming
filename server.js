@@ -260,11 +260,11 @@ var reqToSynthethize = {
     // Performs the text-to-speech request
     const [response] = await google_tts_client.synthesizeSpeech(reqToSynthethize);
 	
-	function TestAsyncFunction (item, cb) {
+	function sendAudioInSequence (item, cb) {
   setTimeout(() => {
     streamResponse.send(item);
     cb();
-  }, 100);
+  }, 1);
 }
 
     // Google voice response
@@ -276,7 +276,7 @@ var reqToSynthethize = {
 		});*/
 		let requestz = formatForNexmo(response.audioContent,640).reduce((promiseChain, item) => {
     return promiseChain.then(() => new Promise((resolve) => {
-      TestAsyncFunction(item, resolve);
+      sendAudioInSequence(item, resolve);
     }));
 }, Promise.resolve());
 
