@@ -252,7 +252,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
   setTimeout(() => {
     streamResponse.send(item);
     cb();
-  }, 6);
+  }, 10);
 }
 
     // Google voice response
