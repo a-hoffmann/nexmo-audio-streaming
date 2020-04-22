@@ -264,7 +264,7 @@ var reqToSynthethize = {
   setTimeout(() => {
     streamResponse.send(item);
     cb();
-  }, 1);
+  }, 10);
 }
 
     // Google voice response
