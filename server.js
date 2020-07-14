@@ -82,7 +82,7 @@ const google_tts_client = new tts.TextToSpeechClient(tts_config);
 
 // Global variables to keep track of the caller
 var CALL_UUID = null;
-var CALLER_NUMBER = '';
+var CALLER_NUMBER = '123';
 
 // Change between "google" or "nexmo"
 var tts_response_provider = process.env.TTS_RESPONSE_PROVIDER || 'nexmo';
@@ -153,7 +153,8 @@ app.get('/webhooks/answer', (req, res) => {
                 // The headers parameter will be passed in the config variable below.
                 "headers": {
                     "language": sttLang,
-                    "uuid": req.url.split("&uuid=")[1].toString()
+                    "uuid": req.url.split("&uuid=")[1].toString(),
+					//"caller": req.url.split("&from=")[1].split("&")[0]
                 }
             }],
         }
@@ -181,11 +182,8 @@ app.ws('/socket', (ws, req) => {
         if (typeof msg === "string") {
             // UUID is captured here.
             let config = JSON.parse(msg);
-			console.log(config)
             CALL_UUID = config["uuid"];
-			CALLER_NUMBER = config["from"];
 			console.log('setting calluuid as ',CALL_UUID)
-			console.log('setting caller number as ',CALLER_NUMBER)
         }
 
         // Send the user input as byte array to Google TTS
@@ -214,7 +212,7 @@ async function sendStream(msg) {
  * Google STT function. When the data has been retrieved from Google cloud, processing from text to response speech is started.
  */
 var recognizeStream = google_stt_client
-    .streamingRecognize(stream_request, {timeout: 60000 * 10})
+    .streamingRecognize(stream_request, {timeout: 60000 * 60})
     .on('error', err => {
 		if (err.code === 4) {
           console.log('Error code 4, restarting');
