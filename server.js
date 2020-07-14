@@ -213,7 +213,7 @@ var recognizeStream = google_stt_client
     .on('error', err => {
 		if (err.code === 4) {
           console.log('Error code 4, restarting');
-		  restartStream();
+		  restartStream(recognizeStream);
         } 
           console.error('API request error ' + err);
 	})
@@ -350,7 +350,7 @@ function restartStream() {
     .on('error', err => {
 		if (err.code === 4) {
           console.log('Error code 4, restarting');
-		  restartStream();
+		  restartStream(recognizeStream);
         } 
           console.error('API request error ' + err);
 	})
