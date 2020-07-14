@@ -181,10 +181,11 @@ app.ws('/socket', (ws, req) => {
         if (typeof msg === "string") {
             // UUID is captured here.
             let config = JSON.parse(msg);
+			console.log(config)
             CALL_UUID = config["uuid"];
 			CALLER_NUMBER = config["from"];
 			console.log('setting calluuid as ',CALL_UUID)
-			console.log('setting calluuid as ',CALLER_NUMBER)
+			console.log('setting caller number as ',CALLER_NUMBER)
         }
 
         // Send the user input as byte array to Google TTS
@@ -232,7 +233,7 @@ var recognizeStream = google_stt_client
  */
 
 async function processContent(transcript) {
-    await TIE.sendInput(process.env.TENEO_ENGINE_URL, sessionUniqueID, { text: transcript, channel: 'IVR', phone: CALLER_NUMBER, } )
+    await TIE.sendInput(process.env.TENEO_ENGINE_URL, sessionUniqueID, { text: transcript, channel: 'IVR', phone: CALLER_NUMBER } )
         .then((response) => {
                 console.log("Speech-to-text user output: " + transcript);
 				//insert SSML here
