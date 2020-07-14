@@ -82,7 +82,7 @@ const google_tts_client = new tts.TextToSpeechClient(tts_config);
 
 // Global variables to keep track of the caller
 var CALL_UUID = null;
-var CALLER_NUMBER = null;
+var CALLER_NUMBER = '';
 
 // Change between "google" or "nexmo"
 var tts_response_provider = process.env.TTS_RESPONSE_PROVIDER || 'nexmo';
@@ -182,7 +182,7 @@ app.ws('/socket', (ws, req) => {
             // UUID is captured here.
             let config = JSON.parse(msg);
             CALL_UUID = config["uuid"];
-			CALLER_NUMBER = config["from"]
+			CALLER_NUMBER = config["from"];
 			console.log('setting calluuid as ',CALL_UUID)
 			console.log('setting calluuid as ',CALLER_NUMBER)
         }
