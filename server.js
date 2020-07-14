@@ -344,7 +344,10 @@ async function sendTranscriptVoiceNoSave(transcript) {
     }	
 }
 
-function restartStream() {
+function restartStream(oldstream) {
+	oldstream.removeListener('data', function() {});
+	oldstream = null;
+	
     var recognizeStream = google_stt_client
     .streamingRecognize(stream_request, {timeout: 60000 * 8})
     .on('error', err => {
@@ -357,6 +360,7 @@ function restartStream() {
     .on('data', data => {
         processContent(data.results[0].alternatives[0].transcript);
     });
+	return recognizeStream
   }
 
 /**
