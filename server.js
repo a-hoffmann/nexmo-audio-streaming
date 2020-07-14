@@ -345,7 +345,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
 }
 
 function restartStream(recognizeStream) {
-      recognizeStream.removeListener('data', function() {});
+      recognizeStream.removeListener('data', processContent());
       recognizeStream = null;
 
     var recognizeStream = google_stt_client
@@ -355,7 +355,7 @@ function restartStream(recognizeStream) {
           console.log('Error code 4, restarting');
 		  restartStream(recognizeStream);
         } 
-          console.error('API request error ' + err);
+          console.error('Another PI request error ' + err);
 	})
     .on('data', data => {
         processContent(data.results[0].alternatives[0].transcript);
