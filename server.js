@@ -273,13 +273,13 @@ async function sendTranscriptVoiceNoSave(transcript) {
 			streamResponse.send(aud);
 			console.log("sent");
 		});*/
-		let requestz = formatForNexmo(response.audioContent,640).reduce((promiseChain, item) => {
+		let requestz = await formatForNexmo(response.audioContent,640).reduce((promiseChain, item) => {
 			return promiseChain.then(() => new Promise((resolve) => {
 				sendAudioInSequence(item, resolve);
 			}));
 			}, Promise.resolve());
 
-		//requestz.then(() => console.log('done'))
+		requestz.then(() => console.log('done'))
 
 		if (endCall) {
 			
