@@ -341,7 +341,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
     }	
 }
 
-function restartStream() {
+function restartStream(recognizeStream) {
       recognizeStream.removeListener('data', processContent(data.results[0].alternatives[0].transcript));
       recognizeStream = null;
 
