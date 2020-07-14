@@ -209,8 +209,13 @@ async function sendStream(msg) {
  * Google STT function. When the data has been retrieved from Google cloud, processing from text to response speech is started.
  */
 const recognizeStream = google_stt_client
-    .streamingRecognize(stream_request)
-    .on('error', console.error)
+    .streamingRecognize(stream_request, {timeout: 60000 * 6})
+    .on('error', err => {
+		if (err.code === 4) {
+          console.log('Error code 4, should be restarted');
+        } 
+          console.error('API request error ' + err);
+        )
     .on('data', data => {
         processContent(data.results[0].alternatives[0].transcript);
     });
@@ -273,13 +278,13 @@ async function sendTranscriptVoiceNoSave(transcript) {
 			streamResponse.send(aud);
 			console.log("sent");
 		});*/
-		let requestz = await formatForNexmo(response.audioContent,640).reduce((promiseChain, item) => {
+		let requestz = formatForNexmo(response.audioContent,640).reduce((promiseChain, item) => {
 			return promiseChain.then(() => new Promise((resolve) => {
 				sendAudioInSequence(item, resolve);
 			}));
 			}, Promise.resolve());
 
-		requestz.then(() => console.log('done'))
+		//requestz.then(() => console.log('done'))
 
 		if (endCall) {
 			
