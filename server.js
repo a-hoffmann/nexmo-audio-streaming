@@ -215,7 +215,7 @@ const recognizeStream = google_stt_client
           console.log('Error code 4, should be restarted');
         } 
           console.error('API request error ' + err);
-        )
+	})
     .on('data', data => {
         processContent(data.results[0].alternatives[0].transcript);
     });
