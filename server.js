@@ -345,7 +345,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
 }
 
 function restartStream(recognizeStream) {
-      recognizeStream.removeListener('data');
+      recognizeStream.removeListener('data', function() {});
       recognizeStream = null;
 
     var recognizeStream = google_stt_client
