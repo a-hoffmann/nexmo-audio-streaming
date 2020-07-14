@@ -208,7 +208,7 @@ async function sendStream(msg) {
 /**
  * Google STT function. When the data has been retrieved from Google cloud, processing from text to response speech is started.
  */
-let recognizeStream = google_stt_client
+var recognizeStream = google_stt_client
     .streamingRecognize(stream_request, {timeout: 60000 * 10})
     .on('error', err => {
 		if (err.code === 4) {
@@ -345,7 +345,7 @@ function restartStream() {
       recognizeStream.removeListener('data', processContent(data.results[0].alternatives[0].transcript));
       recognizeStream = null;
 
-    let recognizeStream = google_stt_client
+    var recognizeStream = google_stt_client
     .streamingRecognize(stream_request, {timeout: 60000 * 8})
     .on('error', err => {
 		if (err.code === 4) {
