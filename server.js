@@ -344,16 +344,13 @@ async function sendTranscriptVoiceNoSave(transcript) {
     }	
 }
 
-function restartStream(recognizeStream) {
-      recognizeStream.removeListener('data', await processContent());
-      recognizeStream = null;
-
+function restartStream() {
     var recognizeStream = google_stt_client
     .streamingRecognize(stream_request, {timeout: 60000 * 8})
     .on('error', err => {
 		if (err.code === 4) {
           console.log('Error code 4, restarting');
-		  restartStream(recognizeStream);
+		  restartStream();
         } 
           console.error('Another PI request error ' + err);
 	})
