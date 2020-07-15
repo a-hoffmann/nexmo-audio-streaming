@@ -63,7 +63,7 @@ const stt_config = {
 const stt = require('@google-cloud/speech').v1p1beta1;
 const google_stt_client = new stt.SpeechClient(stt_config);
 
-  let streamingLimit = 10000;
+  let streamingLimit = 900000; //90 sec
   let recognizeStream = null;
   let restartCounter = 0;
   let audioInput = [];
@@ -239,7 +239,7 @@ async function sendStream(msg) {
     audioInput = [];
     // Initiate (Reinitiate) a recognize stream
 recognizeStream = google_stt_client
-    .streamingRecognize(stream_request, {timeout: 60000 * 60})
+    .streamingRecognize(stream_request)
     .on('error', err => {
 		if (err.code === 4) {
           console.log('Error code 4, restarting');
