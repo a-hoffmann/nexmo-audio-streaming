@@ -216,7 +216,8 @@ app.ws('/socket', (ws, req) => {
     // Initiated when caller hangs up.
     ws.on('close', () => {
         recognizeStream.destroy();
-		TIE.close(process.env.TENEO_ENGINE_URL, sessionUniqueID)
+		console.log("closing session");
+		TIE.close(process.env.TENEO_ENGINE_URL, sessionUniqueID);
     })
 });
 
@@ -259,7 +260,7 @@ recognizeStream = google_stt_client
  */
 
 async function processContent(transcript) {
-    await TIE.sendInput(process.env.TENEO_ENGINE_URL, sessionUniqueID, { text: transcript, channel: 'IVR', phone: CALLER_NUMBER } )
+    await TIE.sendInput(process.env.TENEO_ENGINE_URL, sessionUniqueID, { text: transcript, channel: 'IVR', phone: CALLER_NUMBER, countryCode: 'sg' } )
         .then((response) => {
                 console.log("Speech-to-text user output: " + transcript);
 				//insert SSML here
