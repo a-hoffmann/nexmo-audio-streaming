@@ -1,4 +1,5 @@
 'use strict'
+//INFINITE STREAMING
 require('dotenv').load()
 const fs = require('fs');
 const util = require('util');
@@ -26,6 +27,10 @@ const ttsGender = process.env.TTS_GENDER || 'NEUTRAL';
 
 const testEndpoint = process.env.TEST_ENDPOINT;
 const testVoiceName = process.env.TEST_VOICE_NAME;
+
+const chalk = require('chalk');
+const {Writable} = require('stream');
+
 
 const recording = process.env.RECORDING || false;
 let config = null;
@@ -55,7 +60,7 @@ const stt_config = {
 	}
 };
 
-const stt = require('@google-cloud/speech');
+const stt = require('@google-cloud/speech').v1p1beta1;
 const google_stt_client = new stt.SpeechClient(stt_config);
 
 /**
@@ -155,6 +160,7 @@ app.get('/webhooks/answer', (req, res) => {
                     "language": sttLang,
                     "uuid": req.url.split("&uuid=")[1].toString(),
 					"caller": req.url.split("&from=")[1].split("&")[0].toString()
+					//"caller": req.url.split("&from=")[1].split("&")[0]
                 }
             }],
         }
@@ -183,9 +189,9 @@ app.ws('/socket', (ws, req) => {
             // UUID is captured here.
             let config = JSON.parse(msg);
             CALL_UUID = config["uuid"];
-			CALLER_NUMBER = config["from"];
-			console.log('setting calluuid as ',CALL_UUID)
-			console.log('setting from number as ',CALLER_NUMBER)
+			CALLER_NUMBER = config["caller"];
+			console.log('setting calluuid as ',CALLER_NUMBER)
+			processContent('') //send empty string for login
         }
 
         // Send the user input as byte array to Google TTS
@@ -210,6 +216,17 @@ async function sendStream(msg) {
     await recognizeStream.write(msg);
 }
 
+  let recognizeStream = null;
+  let restartCounter = 0;
+  let audioInput = [];
+  let lastAudioInput = [];
+  let resultEndTime = 0;
+  let isFinalEndTime = 0;
+  let finalRequestEndTime = 0;
+  let newStream = true;
+  let bridgingOffset = 0;
+  let lastTranscriptWasFinal = false;
+
 /**
  * Google STT function. When the data has been retrieved from Google cloud, processing from text to response speech is started.
  */
@@ -218,13 +235,13 @@ var recognizeStream = google_stt_client
     .on('error', err => {
 		if (err.code === 4) {
           console.log('Error code 4, restarting');
-		  restartStream(recognizeStream);
+		  //restartStream(recognizeStream);
         } 
           console.error('API request error ' + err);
 	})
-    .on('data', data => {
-        processContent(data.results[0].alternatives[0].transcript);
-    });
+     .on('data', speechCallback);
+    // Restart stream when streamingLimit expires
+    setTimeout(restartStream, streamingLimit);
 
 /**
  * processContent is an asynchronous function to send input and retrieve output from a Teneo instance.
@@ -346,23 +363,112 @@ async function sendTranscriptVoiceNoSave(transcript) {
     }	
 }
 
-function restartStream(oldstream) {
-	oldstream.removeListener('data', function() {});
-	oldstream = null;
-	
-    var recognizeStream = google_stt_client
-    .streamingRecognize(stream_request, {timeout: 60000 * 8})
-    .on('error', err => {
-		if (err.code === 4) {
-          console.log('Error code 4, restarting');
-		  restartStream();
-        } 
-          console.error('Another PI request error ' + err);
-	})
-    .on('data', data => {
-        processContent(data.results[0].alternatives[0].transcript);
-    });
-	return recognizeStream
+     
+
+  const speechCallback = stream => {
+    // Convert API result end time from seconds + nanoseconds to milliseconds
+    resultEndTime =
+      stream.results[0].resultEndTime.seconds * 1000 +
+      Math.round(stream.results[0].resultEndTime.nanos / 1000000);
+
+    // Calculate correct time based on offset from audio sent twice
+    const correctedTime =
+      resultEndTime - bridgingOffset + streamingLimit * restartCounter;
+
+    process.stdout.clearLine();
+    process.stdout.cursorTo(0);
+    let stdoutText = '';
+    if (stream.results[0] && stream.results[0].alternatives[0]) {
+      stdoutText =
+        correctedTime + ': ' + stream.results[0].alternatives[0].transcript;
+    }
+
+    if (stream.results[0].isFinal) {
+		//
+		processContent(stream.results[0].alternatives[0].transcript);
+      process.stdout.write(chalk.green(`${stdoutText}\n`));
+
+      isFinalEndTime = resultEndTime;
+      lastTranscriptWasFinal = true;
+    } else {
+      // Make sure transcript does not exceed console character length
+      if (stdoutText.length > process.stdout.columns) {
+        stdoutText =
+          stdoutText.substring(0, process.stdout.columns - 4) + '...';
+      }
+      process.stdout.write(chalk.red(`${stdoutText}`));
+
+      lastTranscriptWasFinal = false;
+    }
+  };
+
+  const audioInputStreamTransform = new Writable({
+    write(chunk, encoding, next) {
+      if (newStream && lastAudioInput.length !== 0) {
+        // Approximate math to calculate time of chunks
+        const chunkTime = streamingLimit / lastAudioInput.length;
+        if (chunkTime !== 0) {
+          if (bridgingOffset < 0) {
+            bridgingOffset = 0;
+          }
+          if (bridgingOffset > finalRequestEndTime) {
+            bridgingOffset = finalRequestEndTime;
+          }
+          const chunksFromMS = Math.floor(
+            (finalRequestEndTime - bridgingOffset) / chunkTime
+          );
+          bridgingOffset = Math.floor(
+            (lastAudioInput.length - chunksFromMS) * chunkTime
+          );
+
+          for (let i = chunksFromMS; i < lastAudioInput.length; i++) {
+            recognizeStream.write(lastAudioInput[i]);
+          }
+        }
+        newStream = false;
+      }
+
+      audioInput.push(chunk);
+
+      if (recognizeStream) {
+        recognizeStream.write(chunk);
+      }
+
+      next();
+    },
+
+    final() {
+      if (recognizeStream) {
+        recognizeStream.end();
+      }
+    },
+  });
+
+  function restartStream() {
+    if (recognizeStream) {
+      recognizeStream.removeListener('data', speechCallback);
+      recognizeStream = null;
+    }
+    if (resultEndTime > 0) {
+      finalRequestEndTime = isFinalEndTime;
+    }
+    resultEndTime = 0;
+
+    lastAudioInput = [];
+    lastAudioInput = audioInput;
+
+    restartCounter++;
+
+    if (!lastTranscriptWasFinal) {
+      process.stdout.write('\n');
+    }
+    process.stdout.write(
+      chalk.yellow(`${streamingLimit * restartCounter}: RESTARTING REQUEST\n`)
+    );
+
+    newStream = true;
+
+    startStream();
   }
 
 /**

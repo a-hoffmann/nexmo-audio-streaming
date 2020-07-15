@@ -4,7 +4,7 @@
   "description": "Google Cloud Speech, Teneo with Nexmo Demo",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node serverInfinite.js",
     "test": "node serverDev.js"
   },
   "repository": {
