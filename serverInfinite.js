@@ -216,6 +216,7 @@ app.ws('/socket', (ws, req) => {
     // Initiated when caller hangs up.
     ws.on('close', () => {
         recognizeStream.destroy();
+		TIE.close(process.env.TENEO_ENGINE_URL, sessionUniqueID)
     })
 });
 
