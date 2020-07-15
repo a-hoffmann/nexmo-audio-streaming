@@ -190,8 +190,9 @@ app.ws('/socket', (ws, req) => {
             let config = JSON.parse(msg);
             CALL_UUID = config["uuid"];
 			CALLER_NUMBER = config["caller"];
-			console.log('setting calluuid as ',CALLER_NUMBER)
-			processContent('') //send empty string for login
+			console.log('setting calluuid as ',CALLER_NUMBER);
+			processContent(''); //send empty string for login
+			startStream();
         }
 
         // Send the user input as byte array to Google TTS
@@ -230,6 +231,10 @@ async function sendStream(msg) {
 /**
  * Google STT function. When the data has been retrieved from Google cloud, processing from text to response speech is started.
  */
+   function startStream() {
+    // Clear current audioInput
+    audioInput = [];
+    // Initiate (Reinitiate) a recognize stream
 recognizeStream = google_stt_client
     .streamingRecognize(stream_request, {timeout: 60000 * 60})
     .on('error', err => {
@@ -242,7 +247,7 @@ recognizeStream = google_stt_client
      .on('data', speechCallback);
     // Restart stream when streamingLimit expires
     setTimeout(restartStream, streamingLimit);
-
+   }
 /**
  * processContent is an asynchronous function to send input and retrieve output from a Teneo instance.
  * After this is completed, Google or Nexmo TTS is initiated.
