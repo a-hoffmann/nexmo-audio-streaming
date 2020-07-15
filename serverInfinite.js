@@ -63,6 +63,18 @@ const stt_config = {
 const stt = require('@google-cloud/speech').v1p1beta1;
 const google_stt_client = new stt.SpeechClient(stt_config);
 
+const streamingLimit = 10000;
+  let recognizeStream = null;
+  let restartCounter = 0;
+  let audioInput = [];
+  let lastAudioInput = [];
+  let resultEndTime = 0;
+  let isFinalEndTime = 0;
+  let finalRequestEndTime = 0;
+  let newStream = true;
+  let bridgingOffset = 0;
+  let lastTranscriptWasFinal = false;
+
 /**
  * Separate configuration file for Google cloud TTS.
  * NOTE: You _have_ to keep a seperate variable for projectId and KeyFileName, otherwise there will be an exception.
@@ -190,7 +202,7 @@ app.ws('/socket', (ws, req) => {
             let config = JSON.parse(msg);
             CALL_UUID = config["uuid"];
 			CALLER_NUMBER = config["caller"];
-			console.log('setting calluuid as ',CALLER_NUMBER);
+			console.log('setting caller as ',CALLER_NUMBER);
 			processContent(''); //send empty string for login
 			startStream();
         }
@@ -217,16 +229,7 @@ async function sendStream(msg) {
     await recognizeStream.write(msg);
 }
 
-  let recognizeStream = null;
-  let restartCounter = 0;
-  let audioInput = [];
-  let lastAudioInput = [];
-  let resultEndTime = 0;
-  let isFinalEndTime = 0;
-  let finalRequestEndTime = 0;
-  let newStream = true;
-  let bridgingOffset = 0;
-  let lastTranscriptWasFinal = false;
+
 
 /**
  * Google STT function. When the data has been retrieved from Google cloud, processing from text to response speech is started.
