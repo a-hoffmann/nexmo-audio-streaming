@@ -154,8 +154,8 @@ app.get('/webhooks/answer', (req, res) => {
 
     your_hostname = `${req.hostname}`;
 
-    /*let nccoResponse = [
-	{
+    let nccoResponse = [
+	/*{
     "action": "talk",
     "text": ((voiceName==="Mizuki") ? "IVRシステムへようこそ。 " : "Hello and welcome to the IVR system."),
     "voiceName": voiceName,
