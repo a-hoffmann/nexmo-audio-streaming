@@ -24,6 +24,7 @@
     "audio-buffer-from": "^1.1.1",
     "axios": "^0.19.2",
     "body-parser": "^1.18.3",
+    "chalk": "^4.1.0",
     "dotenv": "^4.0.0",
     "express": "^4.16.4",
     "express-ws": "^4.0.0",
