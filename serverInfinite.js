@@ -245,7 +245,7 @@ recognizeStream = google_stt_client
           console.log('Error code 4, restarting');
 		  //restartStream(recognizeStream);
         } 
-          console.error('API request error ' + err);
+          console.error('API request error ' + err.message);
 	})
      .on('data', speechCallback);
     // Restart stream when streamingLimit expires
@@ -390,7 +390,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
       stdoutText =
         correctedTime + ': ' + stream.results[0].alternatives[0].transcript;
     }
-	console.log(stdoutText);
+	processContent(stream.results[0].alternatives[0].transcript)
   };
 
   const audioInputStreamTransform = new Writable({
