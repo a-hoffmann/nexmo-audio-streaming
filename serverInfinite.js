@@ -154,13 +154,13 @@ app.get('/webhooks/answer', (req, res) => {
 
     your_hostname = `${req.hostname}`;
 
-    let nccoResponse = [
+    /*let nccoResponse = [
 	{
     "action": "talk",
     "text": ((voiceName==="Mizuki") ? "IVRシステムへようこそ。 " : "Hello and welcome to the IVR system."),
     "voiceName": voiceName,
     "bargeIn": false
-  },
+  },*/
         {
             "action": "connect",
             "endpoint": [{
@@ -383,31 +383,14 @@ async function sendTranscriptVoiceNoSave(transcript) {
     const correctedTime =
       resultEndTime - bridgingOffset + streamingLimit * restartCounter;
 
-    process.stdout.clearLine();
-    process.stdout.cursorTo(0);
+    //process.stdout.clearLine();
+    //process.stdout.cursorTo(0);
     let stdoutText = '';
     if (stream.results[0] && stream.results[0].alternatives[0]) {
       stdoutText =
         correctedTime + ': ' + stream.results[0].alternatives[0].transcript;
     }
-
-    if (stream.results[0].isFinal) {
-		//
-		processContent(stream.results[0].alternatives[0].transcript);
-      process.stdout.write(chalk.green(`${stdoutText}\n`));
-
-      isFinalEndTime = resultEndTime;
-      lastTranscriptWasFinal = true;
-    } else {
-      // Make sure transcript does not exceed console character length
-      if (stdoutText.length > process.stdout.columns) {
-        stdoutText =
-          stdoutText.substring(0, process.stdout.columns - 4) + '...';
-      }
-      process.stdout.write(chalk.red(`${stdoutText}`));
-
-      lastTranscriptWasFinal = false;
-    }
+	console.log(stdoutText);
   };
 
   const audioInputStreamTransform = new Writable({
