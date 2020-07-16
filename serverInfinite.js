@@ -63,7 +63,7 @@ const stt_config = {
 const stt = require('@google-cloud/speech').v1p1beta1;
 const google_stt_client = new stt.SpeechClient(stt_config);
 
-  let streamingLimit = 900000; //90 sec
+  let streamingLimit = 150000; //150 sec
   let recognizeStream = null;
   let restartCounter = 0;
   let audioInput = [];
