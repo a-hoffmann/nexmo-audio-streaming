@@ -361,7 +361,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
     // Nexmo voice response
     else if(tts_response_provider === "nexmo") {
 		console.log("sending to call uuid", CALL_UUID);
-        nexmo.calls.talk.start(CALL_UUID, { text: transcript, voice_name: voiceName, loop: 1 }, (err, res) => {
+        nexmo.calls.talk.start(CALL_UUID, { text: transcript, voice_name: 'Emma', loop: 1 }, (err, res) => {
             if(err) { console.error(err); }
             else {
                 console.log("Nexmo response sent: " + res);
