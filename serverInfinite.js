@@ -143,6 +143,7 @@ app.post('/webhooks/events', (req, res) => {
 	if (req.body.recording_url) {
 		console.log('Recording available at: ',req.body.recording_url)
 	}
+	console.log("call uuid",CALL_UUID);
     res.sendStatus(200);
 });
 
@@ -202,7 +203,7 @@ app.ws('/socket', (ws, req) => {
             let config = JSON.parse(msg);
             CALL_UUID = config["uuid"];
 			CALLER_NUMBER = config["caller"];
-			console.log('setting caller as ',CALLER_NUMBER);
+			console.log('setting caller as ',CALL_UUID);
 			processContent(''); //send empty string for login
 			startStream();
         }
