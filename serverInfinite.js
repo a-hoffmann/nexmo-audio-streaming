@@ -21,8 +21,10 @@ const speech = require('@google-cloud/speech');
 const TIE = require('@artificialsolutions/tie-api-client');
 
 const voiceName = process.env.NEXMO_VOICE || 'Brian';
+
 const sttLang = process.env.STT_LANG_CODE || 'en-GB';
 const ttsLang = process.env.TTS_LANG_CODE || 'en-GB';
+const ttsLangName = process.env.TTS_LANG_NAME || '';
 const ttsGender = process.env.TTS_GENDER || 'NEUTRAL';
 
 const testEndpoint = process.env.TEST_ENDPOINT;
@@ -143,7 +145,6 @@ app.post('/webhooks/events', (req, res) => {
 	if (req.body.recording_url) {
 		console.log('Recording available at: ',req.body.recording_url)
 	}
-	console.log("call uuid",CALL_UUID);
     res.sendStatus(200);
 });
 
@@ -299,7 +300,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
 		var reqToSynthethize = {
         input: (transcript.startsWith("<speak")) ? {ssml: transcript} : {text: transcript},
         // Select the language and SSML voice gender (optional) 
-        voice: {languageCode: ttsLang, ssmlGender: 'FEMALE'},
+        voice: {languageCode: ttsLang, name: ttsLangName, ssmlGender: 'FEMALE'},
         // select the type of audio encoding
         audioConfig: {audioEncoding: 'LINEAR16', sampleRateHertz: 16000}, 
     }
