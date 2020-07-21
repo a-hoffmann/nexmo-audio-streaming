@@ -38,7 +38,7 @@ const nexmo = new Nexmo({
   apiKey: process.env.NEXMO_API_KEY,
   apiSecret: process.env.NEXMO_API_SECRET,
   applicationId: process.env.APP_ID,
-  privateKey: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n')
+  privateKey: process.env.NEXMO_PRIVATE_KEY.replace(/\\n/g, '\n')
 });
 
 /**
