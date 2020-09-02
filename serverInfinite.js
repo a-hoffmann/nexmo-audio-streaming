@@ -166,7 +166,7 @@ app.get('/start-call', (req,res) => {
                 // The headers parameter will be passed in the config variable below.
                 "headers": {
                     "language": sttLang,
-                    "uuid": req.url.split("&uuid=")[1].toString(),
+                    "uuid": '123',
 					"caller": process.env.TO_NUMBER
                 }
             }],
