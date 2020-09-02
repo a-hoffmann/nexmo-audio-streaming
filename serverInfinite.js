@@ -138,6 +138,48 @@ app.use(express.static('public'));
 app.use(express.static('files'));
 
 /**
+ * GET triggered by simple frontend
+ */
+ 
+app.get('/start-call', (req,res) => {
+
+    your_hostname = `${req.hostname}`;
+	
+	nexmo.calls.create({
+  to: [{
+    type: 'phone',
+    number: process.env.TO_NUMBER
+  }],
+  from: {
+    type: 'phone',
+    number: process.env.NEXMO_NUMBER
+  },
+  ncco: [{
+    "action": "talk",
+    "text": "This is a text to speech call from Nexmo"
+  },{
+            "action": "connect",
+            "endpoint": [{
+                "type": "websocket",
+                "content-type": "audio/l16;rate=16000",
+                "uri": `ws://${req.hostname}/socket`,
+                // The headers parameter will be passed in the config variable below.
+                "headers": {
+                    "language": sttLang,
+                    "uuid": req.url.split("&uuid=")[1].toString(),
+					"caller": process.env.TO_NUMBER
+                }
+            }],
+        }]
+}, (error, response) => {
+  if (error) console.error(error)
+  if (response) console.log(response)
+})
+
+    res.status(200);
+});
+
+/**
  * POST response for the default events parameter
  */
 

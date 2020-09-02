@@ -1,0 +1,16 @@
+<html><button class="test">Start Call</button></html>
+
+
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script>
+$(function(){ // jQuery DOM ready
+  $('.test').click(function () { 
+
+    $.get('/start-call', function (data) {
+      console.log('client data:', data);
+    });
+
+    return false; // don't navigate to href="#"
+  });
+});
+</script>
