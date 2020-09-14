@@ -244,17 +244,22 @@ app.ws('/socket', (ws, req) => {
         if (typeof msg === "string") {
             // UUID is captured here.
             let config = JSON.parse(msg);
-            CALL_UUID = config["uuid"];
-			CALLER_NUMBER = config["caller"];
-			console.log('setting caller as ',CALL_UUID);
-			processContent(''); //send empty string for login
-			startStream();
+				if (config.event=="websocket:dtmf") {
+					console.log("got dtmf message");
+					processContent(config.digit.toString())
+				}
+				else {
+				CALL_UUID = config["uuid"];
+				CALLER_NUMBER = config["caller"];
+				console.log('setting caller as ',CALL_UUID);
+				processContent(''); //send empty string for login
+				startStream();
+			}
         }
 
         // Send the user input as byte array to STT Engine
 		// DTMF?
         else {
-			console.log(msg);
             sendStream(msg);
         }
     });
