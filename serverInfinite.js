@@ -187,6 +187,7 @@ app.post('/webhooks/events', (req, res) => {
 	if (req.body.recording_url) {
 		console.log('Recording available at: ',req.body.recording_url)
 	}
+	console.log(req);
     res.sendStatus(200);
 });
 
