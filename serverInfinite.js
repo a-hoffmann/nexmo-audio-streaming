@@ -163,11 +163,12 @@ app.get('/start-call', (req,res) => {
                 "type": "websocket",
                 "content-type": "audio/l16;rate=16000",
                 "uri": `ws://${req.hostname}/socket`,
-                // The headers parameter will be passed in the config variable below.
+                // The headers parameter will be passed in the config variable.
                 "headers": {
                     "language": sttLang,
                     "uuid": '123',
-					"caller": process.env.TO_NUMBER
+					"caller": process.env.TO_NUMBER,
+					"instruc": process.env.INSTRUC
                 }
             }],
         }]
@@ -216,7 +217,6 @@ app.get('/webhooks/answer', (req, res) => {
                     "language": sttLang,
                     "uuid": req.url.split("&uuid=")[1].toString(),
 					"caller": req.url.split("&from=")[1].split("&")[0].toString()
-					//"caller": req.url.split("&from=")[1].split("&")[0]
                 }
             }],
         }
@@ -252,13 +252,15 @@ app.ws('/socket', (ws, req) => {
 				CALL_UUID = config["uuid"];
 				CALLER_NUMBER = config["caller"];
 				console.log('setting caller as ',CALL_UUID);
+				if (config.instruc) {processContent(config.instruc)}
+				else {
 				processContent(''); //send empty string for login
+				}
 				startStream();
 			}
         }
 
         // Send the user input as byte array to STT Engine
-		// DTMF?
         else {
             sendStream(msg);
         }
