@@ -251,9 +251,11 @@ app.ws('/socket', (ws, req) => {
 			startStream();
         }
 
-        // Send the user input as byte array to Google TTS
+        // Send the user input as byte array to STT Engine
+		// DTMF?
         else {
-            sendStream(msg)
+			console.log(msg);
+            sendStream(msg);
         }
     });
 
