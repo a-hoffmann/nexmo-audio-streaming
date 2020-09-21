@@ -156,7 +156,7 @@ app.get('/start-call', (req,res) => {
   },
   ncco: [{
     "action": "talk",
-    "text": "This is a text to speech call from Nexmo"
+    "text": "Please hold."
   },{
             "action": "connect",
             "endpoint": [{
@@ -349,7 +349,7 @@ async function sendTranscriptVoiceNoSave(transcript) {
     // Google voice response
     if(tts_response_provider === "google") {
 		var reqToSynthethize = {
-        input: (transcript.startsWith("<speak")) ? {ssml: transcript} : {text: transcript},
+        input: (transcript.indexOf("<speak>")>-1) ? {ssml: transcript} : {text: transcript},
         // Select the language and SSML voice gender (optional) 
         voice: {languageCode: ttsLang, name: ttsLangName, ssmlGender: 'FEMALE'},
         // select the type of audio encoding
