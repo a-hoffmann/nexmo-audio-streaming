@@ -200,7 +200,7 @@ app.post('/webhooks/events', (req, res) => {
 		
 		axios.post(tableEndpoint, {
 		updateBody
-		}).then(console.log("Record Updated"));*/
+		}).then(console.log("Record Updated"));
 	}
     res.sendStatus(200);
 });
