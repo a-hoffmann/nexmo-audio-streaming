@@ -198,8 +198,12 @@ app.post('/webhooks/events', (req, res) => {
 		updateBody.values[0][7] = 'did not pick up';
 		
 		axios.post(tableEndpoint, {
-		JSON.stringify(updateBody)
-		}, headers: {'Content-Type': 'application/json'}).then(function (response) {console.log("Record Updated"); console.log(response);});
+		updateBody
+		}, headers: {'Content-Type': 'application/json'}).then((response) => {
+  console.log(response);
+}, (error) => {
+  console.log(error);
+});
 	}
     res.sendStatus(200);
 });
