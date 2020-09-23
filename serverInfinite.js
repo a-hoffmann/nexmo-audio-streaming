@@ -178,7 +178,7 @@ app.get('/start-call', (req,res) => {
         }]
 }, (error, response) => {
   if (error) console.error(error)
-  if (response) {console.log("response is ",response); res.status(200)}
+  if (response) {console.log(response); res.status(200)}
 })
 
     res.status(200);
@@ -194,16 +194,15 @@ app.post('/webhooks/events', (req, res) => {
 	}
 	if (req.body.status === "unanswered" || req.body.status === "busy" ) {
 		console.log(req.body.to, 'this Caller did not pick up');
-		//already parsed as JSON
 		updateBody.values[0][7] = 'did not pick up';
 		
 		axios.post(tableEndpoint, updateBody, {
 			headers: {'Content-Type': 'application/json'}
 			}).then((response) => {
-  console.log(response);
-}, (error) => {
-  console.log(error);
-});
+			console.log("Record updated");
+			}, (error) => {
+		console.log(error);
+			});
 	}
     res.sendStatus(200);
 });
