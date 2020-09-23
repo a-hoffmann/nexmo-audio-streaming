@@ -188,6 +188,14 @@ app.post('/webhooks/events', (req, res) => {
 	if (req.body.recording_url) {
 		console.log('Recording available at: ',req.body.recording_url)
 	}
+	if (req.body.status === "unanswered") {
+		console.log(req.body.to, 'this Caller did not pick up');
+		/*axios.post(tableEndpoint, {
+		statusUpdate: transcript,
+        Checkbox: true,
+        Person: testVoiceName 
+	}).then(console.log("Record Updated"));*/
+	}
     res.sendStatus(200);
 });
 
