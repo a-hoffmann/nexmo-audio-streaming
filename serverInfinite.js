@@ -197,9 +197,9 @@ app.post('/webhooks/events', (req, res) => {
 		//already parsed as JSON
 		updateBody.values[0][7] = 'did not pick up';
 		
-		axios.post(tableEndpoint, {
-		updateBody
-		}, headers: {'Content-Type': 'application/json'}).then((response) => {
+		axios.post(tableEndpoint, updateBody, {
+			headers: {'Content-Type': 'application/json'}
+			}).then((response) => {
   console.log(response);
 }, (error) => {
   console.log(error);
