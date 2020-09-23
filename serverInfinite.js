@@ -31,7 +31,7 @@ const testEndpoint = process.env.TEST_ENDPOINT;
 const testVoiceName = process.env.TEST_VOICE_NAME;
 
 const tableEndpoint = process.env.TABLE_ENDPOINT;
-const updateBody = process.env.UPDATE_BODY;
+const updateBody = JSON.parse(process.env.UPDATE_BODY);
 
 
 const chalk = require('chalk');
@@ -194,7 +194,9 @@ app.post('/webhooks/events', (req, res) => {
 	}
 	if (req.body.status === "unanswered" || req.body.status === "busy" ) {
 		console.log(req.body.to, 'this Caller did not pick up');
+		//already parsed as JSON
 		console.log(updateBody);
+		console.log(updateBody.values);
 		console.log(updateBody.values[0][7]);
 		updateBody.values[0][7] = 'did not pick up';
 		
