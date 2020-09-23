@@ -178,7 +178,7 @@ app.get('/start-call', (req,res) => {
         }]
 }, (error, response) => {
   if (error) console.error(error)
-  if (response) {console.log(response); res.status(200)}
+  if (response) {console.log(response); res.status(200).end()}
 })
 
     res.status(200);
