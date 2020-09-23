@@ -195,14 +195,11 @@ app.post('/webhooks/events', (req, res) => {
 	if (req.body.status === "unanswered" || req.body.status === "busy" ) {
 		console.log(req.body.to, 'this Caller did not pick up');
 		//already parsed as JSON
-		console.log(updateBody);
-		console.log(updateBody.values);
-		console.log(updateBody.values[0][7]);
 		updateBody.values[0][7] = 'did not pick up';
 		
 		axios.post(tableEndpoint, {
-		updateBody
-		}).then(console.log("Record Updated"));
+		JSON.stringify(updateBody)
+		}, headers: {'Content-Type': 'application/json'}).then(function (response) {console.log("Record Updated"); console.log(response);});
 	}
     res.sendStatus(200);
 });
