@@ -30,6 +30,10 @@ const ttsGender = process.env.TTS_GENDER || 'NEUTRAL';
 const testEndpoint = process.env.TEST_ENDPOINT;
 const testVoiceName = process.env.TEST_VOICE_NAME;
 
+const tableEndpoint = process.env.TABLE_ENDPOINT;
+const updateBody = process.env.UPDATE_BODY;
+
+
 const chalk = require('chalk');
 const {Writable} = require('stream');
 
@@ -185,17 +189,18 @@ app.get('/start-call', (req,res) => {
  */
 
 app.post('/webhooks/events', (req, res) => {
-	console.log(req.body);
 	if (req.body.recording_url) {
 		console.log('Recording available at: ',req.body.recording_url)
 	}
-	if (req.body.status === "unanswered") {
+	if (req.body.status === "unanswered" || req.body.status === "busy" ) {
 		console.log(req.body.to, 'this Caller did not pick up');
-		/*axios.post(tableEndpoint, {
-		statusUpdate: transcript,
-        Checkbox: true,
-        Person: testVoiceName 
-	}).then(console.log("Record Updated"));*/
+		console.log(updateBody);
+		console.log(updateBody.values[0][7]);
+		updateBody.values[0][7] = 'did not pick up';
+		
+		axios.post(tableEndpoint, {
+		updateBody
+		}).then(console.log("Record Updated"));*/
 	}
     res.sendStatus(200);
 });
