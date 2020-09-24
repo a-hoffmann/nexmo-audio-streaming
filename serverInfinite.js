@@ -189,7 +189,6 @@ app.get('/start-call', (req,res) => {
  */
 
 app.post('/webhooks/events', (req, res) => {
-	console.log(req.body);
 	if (req.body.recording_url) {
 		console.log('Recording available at: ',req.body.recording_url)
 	}
