@@ -369,10 +369,12 @@ async function sendTranscriptVoiceNoSave(transcript) {
 		var reqToSynthethize = {
         input: (transcript.indexOf("<speak>")>-1) ? {ssml: transcript} : {text: transcript},
         // Select the language and SSML voice gender (optional) 
-        voice: {languageCode: ttsLang, name: ttsLangName, ssmlGender: 'FEMALE'},
+        voice: {languageCode: ttsLang, name: ttsLangName, ssmlGender: ttsGender},
         // select the type of audio encoding
         audioConfig: {audioEncoding: 'LINEAR16', sampleRateHertz: 16000}, 
     }
+	
+	console.log("testing ",reqToSynthethize.input); 
 	
     // Performs the text-to-speech request
     const [response] = await google_tts_client.synthesizeSpeech(reqToSynthethize);
