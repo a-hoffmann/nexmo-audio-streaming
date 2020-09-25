@@ -158,7 +158,9 @@ app.get('/start-call', (req,res) => {
     type: 'phone',
     number: process.env.NEXMO_NUMBER
   },
-  ncco: [{
+  ncco: [{"action": "record",
+	"eventUrl": [`https://${req.hostname}/webhooks/events`]
+},{
     "action": "talk",
     "text": "Please hold."
   },{
@@ -176,10 +178,6 @@ app.get('/start-call', (req,res) => {
                 }
             }],
         }]
-		
-		if (recording==="true") {ncco.unshift({"action": "record",
-	"eventUrl": [`https://${req.hostname}/webhooks/events`]
-	})}
 }, (error, response) => {
   if (error) console.error(error)
   if (response) {console.log(response); res.status(200).end()}
