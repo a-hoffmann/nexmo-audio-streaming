@@ -374,8 +374,6 @@ async function sendTranscriptVoiceNoSave(transcript) {
         audioConfig: {audioEncoding: 'LINEAR16', sampleRateHertz: 16000}, 
     }
 	
-	console.log("testing ",reqToSynthethize.input); 
-	
     // Performs the text-to-speech request
     const [response] = await google_tts_client.synthesizeSpeech(reqToSynthethize);
 	
