@@ -30,6 +30,7 @@ const ttsGender = process.env.TTS_GENDER || 'NEUTRAL';
 const testEndpoint = process.env.TEST_ENDPOINT;
 const testVoiceName = process.env.TEST_VOICE_NAME;
 
+const tableUpdating = process.env.TABLE_UPDATING || false;
 const tableEndpoint = process.env.TABLE_ENDPOINT;
 const updateBody = JSON.parse(process.env.UPDATE_BODY);
 
@@ -194,6 +195,7 @@ app.post('/webhooks/events', (req, res) => {
 	if (req.body.recording_url) {
 		console.log('Recording available at: ',req.body.recording_url)
 	}
+	if (tableUpdating) {
 	if (req.body.status === "unanswered" || req.body.status === "busy" ) {
 		console.log(req.body.to, 'this Caller did not pick up');
 		updateBody.values[0][7] = 'did not pick up';
@@ -205,6 +207,7 @@ app.post('/webhooks/events', (req, res) => {
 			}, (error) => {
 		console.log(error);
 			});
+	}
 	}
     res.sendStatus(200);
 });
@@ -526,9 +529,10 @@ async function sendTranscriptVoiceNoSave(transcript) {
     if (!lastTranscriptWasFinal) {
       process.stdout.write('\n');
     }
-    process.stdout.write(
-      chalk.yellow(`${streamingLimit * restartCounter}: RESTARTING REQUEST\n`)
-    );
+	//removed for webinar
+  //  process.stdout.write(
+   //   chalk.yellow(`${streamingLimit * restartCounter}: RESTARTING REQUEST\n`)
+    //);
 
     newStream = true;
 
