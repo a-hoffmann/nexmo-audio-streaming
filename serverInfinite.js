@@ -290,7 +290,7 @@ app.ws('/socket', (ws, req) => {
     // Initiated when caller hangs up.
     ws.on('close', () => {
         recognizeStream.destroy();
-		console.log("closing session");
+		console.log("resolving issue");
 		TIE.close(process.env.TENEO_ENGINE_URL, sessionUniqueID);
     })
 });
@@ -321,7 +321,7 @@ recognizeStream = google_stt_client
           console.log('Error code 4, restarting');
 		  //restartStream(recognizeStream);
         } 
-          console.error('API request error ' + err.message);
+          //console.error('API request error ' + err.message);
 	})
      .on('data', speechCallback);
     // Restart stream when streamingLimit expires
